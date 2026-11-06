@@ -60,6 +60,17 @@ const NAME_CN = {
   'Alycia Parks': '帕克斯', 'Ann Li': '李安',
   'Sara Bejlek': '贝莱克', 'Antonia Vergara Rivera': '贝加拉',
   'Veronica Royer': '罗耶', 'Loa Milojevic': '米洛耶维奇', 'Josepha Godefroid': '戈弗雷',
+  'Matteo Berrettini': '贝雷蒂尼', 'Ignacio Buse': '布塞', 'Magda Linette': '利内特',
+  'Mai Hontama': '本玉真优', 'Robin Montgomery': '蒙哥马利', 'Maaya Rajeshwaran Revathi': '拉杰什瓦兰',
+  'Nicolas Jarry': '贾里', 'Francisco Cerundolo': '塞伦多洛', 'Alexei Popyrin': '波佩林',
+  'Sebastian Baez': '巴埃斯', 'Tomas Martin Etcheverry': '埃切维里', 'Alejandro Tabilo': '塔比洛',
+  'Jaume Munar': '穆纳尔', 'Fabian Marozsan': '马罗赞', 'Roman Safiullin': '萨菲乌林',
+  'Katie Boulter': '博尔特', 'Petra Kvitova': '克娃科娃', 'Petra Kvitova': '科维托娃',
+  'Ons Jabeur': '贾贝乌尔', 'Marketa Vondrousova': '万卓索娃', 'Qinwen Zheng': '郑钦文',
+  'Danielle Collins': '柯林斯', 'Sloane Stephens': '斯蒂文斯', 'Varvara Gracheva': '格拉乔娃',
+  'Elise Mertens': '梅尔滕斯', 'Veronika Kudermetova': '库德梅托娃', 'Anastasia Potapova': '波塔波娃',
+  'Clara Tauson': '陶森', 'Sorana Cirstea': '齐尔斯特亚', 'Xinyu Wang': '王欣瑜',
+  'Yuan Yue': '袁悦', 'Saisai Zheng': '郑赛赛', 'Shuai Zhang': '张帅', 'Fengxian Wang': '王凤仙',
   'Aryna Sabalenka': '萨巴伦卡', 'Iga Swiatek': '斯瓦泰克', 'Zheng Qinwen': '郑钦文', 'Coco Gauff': '高芙',
   'Elena Rybakina': '莱巴金娜', 'Jessica Pegula': '佩古拉', 'Naomi Osaka': '大坂直美',
   'Jasmine Paolini': '保利尼', 'Madison Keys': '凯斯', 'Mirra Andreeva': '米拉·安德列娃',
@@ -167,7 +178,7 @@ function convertComp(c, ev, dayOffset) {
         const dayOffset = dayKey === todayKey ? 0 : dayKey === tomorrowKey ? 1 : -1;
         if (dayOffset < 0) continue; // 只留今明两天
         const m = convertComp(c, ev, dayOffset);
-        if (m) all.push(m);
+        if (m && m.status !== '已结束') all.push(m); // 已结束的不显示:赛程页只回答"接下来看什么"
       }
     }
   }

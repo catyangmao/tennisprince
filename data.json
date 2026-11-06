@@ -1,5 +1,5 @@
 {
- "updated": "bot 11-06 22:12",
+ "updated": "bot 11-06 22:42",
  "matches": [
   {
    "tour": "WTA香港站",
@@ -61,8 +61,8 @@
    "start": "21:50",
    "day": 0,
    "court": "Centre Court",
-   "a": "Magda Linette",
-   "b": "Mai Hontama",
+   "a": "利内特",
+   "b": "本玉真优",
    "status": "进行中",
    "sets": [],
    "cur": "第一盘",
@@ -146,7 +146,7 @@
    "start": "13:00",
    "day": 1,
    "court": "",
-   "a": "Robin Montgomery",
+   "a": "蒙哥马利",
    "b": "陈婉萍",
    "status": "未开始",
    "sets": [],
@@ -176,8 +176,8 @@
    "lv": "1000",
    "gender": "ATP",
    "round": "Quarterfinal",
-   "time": "22:30",
-   "start": "22:30",
+   "time": "22:50",
+   "start": "22:50",
    "day": 0,
    "court": "Court Central",
    "a": "土方凛辉",
@@ -193,8 +193,8 @@
    "lv": "250",
    "gender": "WTA",
    "round": "Quarterfinal",
-   "time": "22:45",
-   "start": "22:45",
+   "time": "23:00",
+   "start": "23:00",
    "day": 0,
    "court": "Centre Court",
    "a": "Lucrezia Stefanini",
@@ -221,307 +221,6 @@
    "cur": "",
    "curGame": "",
    "winner": ""
-  },
-  {
-   "tour": "巴黎大师赛",
-   "lv": "1000",
-   "gender": "ATP",
-   "round": "Round 3",
-   "time": "00:10",
-   "start": "00:10",
-   "day": 0,
-   "court": "Court 1",
-   "a": "Ignacio Buse",
-   "b": "博尔热斯",
-   "status": "已结束",
-   "sets": [
-    "6-0",
-    "6-2"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "WTA卡利站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "01:05",
-   "start": "01:05",
-   "day": 0,
-   "court": "Campo 3",
-   "a": "罗梅罗·戈尔马兹",
-   "b": "莫内",
-   "status": "已结束",
-   "sets": [
-    "4-6",
-    "7-5",
-    "6-4"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "a"
-  },
-  {
-   "tour": "WTA卡利站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "01:05",
-   "start": "01:05",
-   "day": 0,
-   "court": "Campo 1",
-   "a": "Renata Zarazua",
-   "b": "里埃拉",
-   "status": "已结束",
-   "sets": [
-    "6-4",
-    "1-6",
-    "6-2"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "巴黎大师赛",
-   "lv": "1000",
-   "gender": "ATP",
-   "round": "Round 3",
-   "time": "02:00",
-   "start": "02:00",
-   "day": 0,
-   "court": "",
-   "a": "阿尔卡拉斯",
-   "b": "Matteo Berrettini",
-   "status": "已结束",
-   "sets": [],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "巴黎大师赛",
-   "lv": "1000",
-   "gender": "ATP",
-   "round": "Round 3",
-   "time": "02:15",
-   "start": "02:15",
-   "day": 0,
-   "court": "Court Central",
-   "a": "弗里茨",
-   "b": "菲斯",
-   "status": "已结束",
-   "sets": [
-    "6-3",
-    "6-4"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "WTA卡利站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "03:25",
-   "start": "03:25",
-   "day": 0,
-   "court": "Campo 1",
-   "a": "安德莱斯库",
-   "b": "Luisina Giovannini",
-   "status": "已结束",
-   "sets": [
-    "6-1",
-    "6-3"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "巴黎大师赛",
-   "lv": "1000",
-   "gender": "ATP",
-   "round": "Round 3",
-   "time": "03:50",
-   "start": "03:50",
-   "day": 0,
-   "court": "Court Central",
-   "a": "鲁德",
-   "b": "斯特鲁夫",
-   "status": "已结束",
-   "sets": [
-    "6-3",
-    "6-3"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "a"
-  },
-  {
-   "tour": "WTA卡利站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "04:25",
-   "start": "04:25",
-   "day": 0,
-   "court": "Campo 3",
-   "a": "图贝洛",
-   "b": "Leolia Jeanjean",
-   "status": "已结束",
-   "sets": [
-    "6-3",
-    "6-2"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "a"
-  },
-  {
-   "tour": "WTA香港站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "14:05",
-   "start": "14:05",
-   "day": 0,
-   "court": "Centre Court",
-   "a": "刘婧文",
-   "b": "Zeynep Sonmez",
-   "status": "已结束",
-   "sets": [
-    "6-1",
-    "6-4"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "a"
-  },
-  {
-   "tour": "WTA香港站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "16:55",
-   "start": "16:55",
-   "day": 0,
-   "court": "Centre Court",
-   "a": "舒布拉泽",
-   "b": "Sorana Cirstea",
-   "status": "已结束",
-   "sets": [
-    "6-2",
-    "6-3"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "a"
-  },
-  {
-   "tour": "WTA金奈站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "17:35",
-   "start": "17:35",
-   "day": 0,
-   "court": "Centre Court",
-   "a": "库德摩托娃",
-   "b": "陈婉萍",
-   "status": "已结束",
-   "sets": [
-    "5-7",
-    "6-4",
-    "6-2"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "WTA香港站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "18:40",
-   "start": "18:40",
-   "day": 0,
-   "court": "Centre Court",
-   "a": "萨卡里",
-   "b": "萨斯诺维奇",
-   "status": "已结束",
-   "sets": [
-    "6-2",
-    "6-3"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "WTA罗安达125K",
-   "lv": "challenger",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "18:55",
-   "start": "18:55",
-   "day": 0,
-   "court": "Lwena Court",
-   "a": "Martyna Kubka",
-   "b": "Sofya Lansere",
-   "status": "已结束",
-   "sets": [
-    "7-6",
-    "",
-    "7-5"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
-  },
-  {
-   "tour": "WTA罗安达125K",
-   "lv": "challenger",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "19:10",
-   "start": "19:10",
-   "day": 0,
-   "court": "Court 3",
-   "a": "Gina Feistel",
-   "b": "Ksenia Zaytseva",
-   "status": "已结束",
-   "sets": [
-    "6-1",
-    "7-5"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "a"
-  },
-  {
-   "tour": "WTA金奈站",
-   "lv": "250",
-   "gender": "WTA",
-   "round": "Quarterfinal",
-   "time": "20:20",
-   "start": "20:20",
-   "day": 0,
-   "court": "Centre Court",
-   "a": "Maaya Rajeshwaran Revathi",
-   "b": "Robin Montgomery",
-   "status": "已结束",
-   "sets": [
-    "6-3",
-    "6-3"
-   ],
-   "cur": "",
-   "curGame": "",
-   "winner": "b"
   }
  ]
 }
