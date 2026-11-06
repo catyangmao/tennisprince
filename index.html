@@ -680,6 +680,14 @@ function statusOf(m){
   return "已结束";
 }
 const LV_NAMES={slam:"大满贯",finals:"年终",1000:"1000赛",500:"500赛",250:"250赛",tour:"巡回赛",challenger:"挑战赛/125K",team:"团体/其他"};
+const LV_ORDER={slam:0,finals:1,1000:2,500:3,250:4,tour:5,challenger:6,team:7}; // 级别高在前
+function orderTours(toursInOrder,byTour){
+  toursInOrder.sort((a,b)=>{
+    const wa=LV_ORDER[(byTour[a][0].lv)]!==undefined?LV_ORDER[byTour[a][0].lv]:9;
+    const wb=LV_ORDER[(byTour[b][0].lv)]!==undefined?LV_ORDER[byTour[b][0].lv]:9;
+    return wa-wb;
+  });
+}
 const CALENDAR=[
   {month:"2026年11月",events:[
     {name:"WTA年终总决赛",lv:"finals",place:"利雅得",surface:"硬地·室内",date:"11月上中旬(待官方)"},
@@ -929,6 +937,7 @@ function renderScoreboard(){
   /* 按赛事分组渲染 */
   const toursInOrder=[];const byTour={};
   ms.forEach(m=>{if(!byTour[m.tour]){byTour[m.tour]=[];toursInOrder.push(m.tour);}byTour[m.tour].push(m);});
+  orderTours(toursInOrder,byTour);
   let html="";
   toursInOrder.forEach(tn=>{
     const list=byTour[tn];
@@ -1010,6 +1019,7 @@ function renderTodayMatches(){
   $("todayLine").textContent="今日赛程("+updatedStamp()+"时点)";
   const toursInOrder=[];const byTour={};
   ms.forEach(m=>{if(!byTour[m.tour]){byTour[m.tour]=[];toursInOrder.push(m.tour);}byTour[m.tour].push(m);});
+  orderTours(toursInOrder,byTour);
   $("todayMatches").innerHTML=toursInOrder.map(tn=>{
     const list=byTour[tn];
     return `<div class="card" style="padding:10px 12px">
