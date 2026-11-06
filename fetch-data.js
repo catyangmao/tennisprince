@@ -66,12 +66,42 @@ const NAME_CN = {
   'Diana Shnaider': '施内德', 'Emma Navarro': '纳瓦罗'
 };
 function cn(t) { return NAME_CN[t] || t; }
-function tourCN(name) {
-  if (TOUR_CN[name]) return TOUR_CN[name];
-  const fuzzy = [['Hong Kong', 'WTA香港站'], ['Chennai', 'WTA金奈站'], ['Cali', 'WTA卡利站'],
-    ['Angola', 'WTA罗安达125K'], ['Paris', '巴黎大师赛'], ['Tokyo', '东京公开赛']];
-  for (const [k, v] of fuzzy) if (name && name.includes(k)) return v;
-  return name || '未知赛事';
+function tourMeta(ev) {
+  const name = ev.name || '';
+  if (ev.major) { // 大满贯
+    return { name: TOUR_CN[name] || name, lv: 'slam' };
+  }
+  // 已知赛事:名字+级别对照(1000/500/250按巡回赛体系)
+  const known = [
+    [/Paris Masters/i, '巴黎大师赛', '1000'],
+    [/Shanghai/i, '上海大师赛', '1000'],
+    [/Monte.?Carlo/i, '蒙特卡洛大师赛', '1000'],
+    [/Madrid Open|Mutua Madrid/i, '马德里公开赛', '1000'],
+    [/Italian Open|Rome/i, '罗马公开赛', '1000'],
+    [/Canada|Masters Toronto|National Bank Open/i, '加拿大大师赛', '1000'],
+    [/Cincinnati/i, '辛辛那提大师赛', '1000'],
+    [/Miami Open/i, '迈阿密公开赛', '1000'],
+    [/BNP Paribas Open|Indian Wells/i, '印第安维尔斯公开赛', '1000'],
+    [/China Open|Beijing/i, '中国网球公开赛', '500'],
+    [/Dubai/i, '迪拜锦标赛', '500'],
+    [/Rotterdam/i, '鹿特丹公开赛', '500'],
+    [/Doha/i, '卡塔尔公开赛', '500'],
+    [/Barcelona/i, '巴塞罗那公开赛', '500'],
+    [/Queen.?s/i, '女王杯', '500'],
+    [/Halle|Gerry Weber/i, '哈勒公开赛', '500'],
+    [/Stuttgart/i, '斯图加特公开赛', '500'],
+    [/Washington/i, '华盛顿公开赛', '500'],
+    [/Tokyo/i, '日本公开赛', '500'],
+    [/Vienna/i, '维也纳公开赛', '500'],
+    [/Hong Kong/i, 'WTA香港站', '250'],
+    [/Chennai/i, 'WTA金奈站', '250'],
+    [/Cali/i, 'WTA卡利站', '250'],
+    [/Angola|Luanda/i, 'WTA罗安达125K', 'challenger'],
+  ];
+  for (const [re, cn, lv] of known) {
+    if (re.test(name)) return { name: cn, lv };
+  }
+  return { name: name || '未知赛事', lv: 'tour' };
 }
 
 async function fetchTour(tour) {
@@ -90,6 +120,7 @@ function parseSets(note) {
 }
 
 function convertComp(c, ev, dayOffset) {
+  const meta = tourMeta(ev);
   const cpts = c.competitors || [];
   if (cpts.length !== 2) return null;
   const nameOf = cp => cn(((cp.athlete || {}).displayName) || '?');
@@ -110,8 +141,8 @@ function convertComp(c, ev, dayOffset) {
   const roundTxt = (c.round && (c.round.displayName || c.round.text)) || '';
   const sex = ((c.type && c.type.text) || '').includes("Women") ? 'WTA' : 'ATP';
   return {
-    tour: tourCN(ev.name),
-    lv: ev.major ? 'slam' : 'tour',
+    tour: meta.name,
+    lv: meta.lv,
     gender: sex,
     round: ROUND_MAP[roundTxt] || roundTxt,
     time: bjTimeStr(st),
