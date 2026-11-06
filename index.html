@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#2e7d32">
+<title>网球王子 · 新球迷看懂比赛、参与比赛</title>
+<style>
+:root{
+  --green:#2e7d32; --green-lt:#e8f5e9; --lime:#cddc39; --ink:#1b2b1b;
+  --gray:#757575; --line:#e0e0e0; --card:#ffffff; --bg:#f4f6f0; --warn:#e65100;
+  --slam:#c9a227; --m1000:#1976d2; --m500:#00897b; --m250:#9e9e9e; --finals:#7b1fa2; --chall:#8d6e63;
+  --live:#e53935; --headbar:#eef1ea;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);font-size:15px;line-height:1.55}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;
+  background:var(--bg);box-shadow:0 0 24px rgba(0,0,0,.08)}
+header{background:var(--green);color:#fff;padding:12px 14px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50}
+header h1{font-size:18px;font-weight:700;letter-spacing:1px;cursor:pointer}
+header h1 small{font-size:10px;font-weight:400;opacity:.85;display:block;letter-spacing:0}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.pts-chip{background:rgba(255,255,255,.18);border-radius:14px;padding:3px 10px;font-size:13px;font-weight:600;cursor:pointer}
+main{flex:1;padding:12px 12px 84px}
+section.tab{display:none}
+section.tab.active{display:block;animation:fadein .18s}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+  background:#fff;border-top:1px solid var(--line);display:flex;z-index:50;
+  padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:none;padding:8px 0 7px;font-size:10.5px;color:var(--gray);
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+nav button .ic{font-size:19px;line-height:1}
+nav button.active{color:var(--green);font-weight:600}
+.card{background:var(--card);border-radius:12px;padding:13px 14px;margin-bottom:10px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.muted{color:var(--gray);font-size:12px}
+.row{display:flex;gap:8px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+input[type=text],input[type=number],input[type=tel],select,textarea{
+  width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-size:15px;
+  background:#fff;color:var(--ink);outline:none}
+input:focus,textarea:focus{border-color:var(--green)}
+textarea{resize:vertical;min-height:70px;font-family:inherit}
+button.btn{background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 16px;
+  font-size:15px;font-weight:600;cursor:pointer;flex:1}
+button.btn.sec{background:var(--green-lt);color:var(--green)}
+button.btn.small{flex:0 0 auto;padding:7px 12px;font-size:13px;border-radius:8px}
+button.btn.danger{background:#fdecea;color:#c62828}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px 11px;
+  font-size:12.5px;color:var(--ink);cursor:pointer}
+.chip.on{background:var(--green);color:#fff;border-color:var(--green)}
+.badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:4px;color:#fff;
+  font-weight:600;vertical-align:middle;margin-right:5px}
+.b-slam{background:var(--slam)}.b-1000{background:var(--m1000)}.b-500{background:var(--m500)}
+.b-250{background:var(--m250)}.b-finals{background:var(--finals)}.b-team{background:#5d4037}.b-challenger{background:var(--chall)}
+.backbar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.backbar button{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 14px;font-size:14px;cursor:pointer;font-weight:600}
+.backbar h2{font-size:16px}
+/* ===== 赛历 ===== */
+.tour-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.tour-strip::-webkit-scrollbar{display:none}
+.tour-chip{flex:0 0 auto;background:#fff;border:1px solid var(--line);border-radius:11px;
+  padding:8px 12px;min-width:150px;cursor:pointer}
+.tour-chip .tn{font-weight:700;font-size:13.5px;white-space:nowrap}
+.tour-chip .ts{font-size:11px;color:var(--gray);margin-top:2px}
+.tour-chip.live{border-color:var(--live)}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);margin-right:4px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.day-h{font-size:14px;font-weight:700;color:var(--green);margin:14px 2px 8px}
+/* ===== 比分板(雷速样式) ===== */
+.sb-tools{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sb-group{background:var(--headbar);border-radius:8px 8px 0 0;padding:7px 10px;font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:6px;margin-top:12px}
+.sb-group .right{margin-left:auto;font-weight:500;color:var(--gray);font-size:11.5px}
+.sb-table{background:#fff;border-radius:0 0 10px 10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:4px}
+.sb-match{border-bottom:1px solid var(--line);padding:8px 10px;display:flex;gap:8px;cursor:pointer}
+.sb-match:last-child{border-bottom:none}
+.sb-time{width:52px;flex:0 0 auto;font-size:12px;color:var(--ink)}
+.sb-time .d{color:var(--gray);font-size:11px}
+.sb-status{width:52px;flex:0 0 auto;font-size:11px;color:var(--gray);padding-top:2px}
+.st-live{color:var(--live);font-weight:700}
+.st-done{color:var(--green)}
+.sb-main{flex:1;min-width:0}
+.sb-prow{display:flex;align-items:center;font-size:13.5px;line-height:1.9}
+.sb-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-name.winner{font-weight:700}
+.sb-cells{display:flex;flex:0 0 auto}
+.sb-cell{width:34px;text-align:center;font-size:13.5px;color:#333}
+.sb-cell.cur{color:var(--live);font-weight:700;width:40px}
+.sb-cell.dim{color:#bbb}
+.sb-fore{flex:0 0 auto;background:var(--green-lt);border:none;color:var(--green);border-radius:8px;
+  padding:6px 9px;font-size:12.5px;font-weight:600;cursor:pointer;align-self:center;white-space:nowrap}
+.gg-vs{text-align:center;font-size:19px;font-weight:800;margin:12px 0;padding:10px;background:var(--headbar);border-radius:9px}
+.sb-server{color:var(--live);font-size:10px;margin-right:2px}
+.sb-upd{text-align:center;font-size:11px;color:var(--gray);margin:8px 0 4px}
+/* 分析器 */
+.vs{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.vs .side{flex:1}
+.vs .side label{font-size:12px;color:var(--gray);display:block;margin-bottom:3px}
+.vs .x{font-weight:800;color:var(--gray);font-size:16px}
+.psrc{font-size:11px;margin-top:3px;color:var(--green)}
+.psrc.custom{color:var(--warn)}
+.slider-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+input[type=range]{flex:1;accent-color:var(--green)}
+.pval{font-weight:700;font-size:15px;width:52px;text-align:right}
+.seg{display:flex;background:var(--green-lt);border-radius:9px;overflow:hidden}
+.seg button{flex:1;border:none;background:none;padding:8px 0;font-size:14px;color:var(--green);cursor:pointer;font-weight:600}
+.seg button.on{background:var(--green);color:#fff}
+.result{margin-top:12px}
+.winbar{height:26px;border-radius:13px;overflow:hidden;display:flex;background:#ffb74d;margin:6px 0}
+.winbar .a{background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;min-width:34px}
+.winbar .b{flex:1;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#7a4a00;font-size:12.5px;font-weight:700}
+.bigpct{text-align:center;font-size:34px;font-weight:800;margin:4px 0 0}
+.bigpct .va{color:var(--green)}
+.dist-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.dist-table td,.dist-table th{padding:6px 4px;text-align:center;border-bottom:1px solid var(--line)}
+.dist-table th{color:var(--gray);font-size:11.5px;font-weight:500}
+.dist-table td b{font-size:14.5px}
+.verdict{text-align:center;font-size:14px;font-weight:700;margin-top:8px;padding:7px;border-radius:8px}
+.v-a{background:var(--green-lt);color:var(--green)}
+.v-even{background:#fff8e1;color:#b28704}
+.stat-line{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.stat-line:last-child{border:none}
+.stat-line b{font-weight:600}
+/* 我的 */
+.profile-card{background:linear-gradient(135deg,var(--green) 0%,#1b5e20 100%);color:#fff}
+.profile-card .top{display:flex;align-items:center;gap:12px}
+.avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;
+  align-items:center;justify-content:center;font-size:28px;cursor:pointer;flex:0 0 auto}
+.pname{font-size:18px;font-weight:700}
+.ptitle{font-size:11.5px;opacity:.85;margin-top:1px}
+.pstats{display:flex;margin-top:12px;text-align:center}
+.pstats>div{flex:1}
+.pstats .v{font-size:20px;font-weight:800}
+.pstats .k{font-size:11px;opacity:.8;margin-top:1px}
+.bet-card{border-left:4px solid var(--green)}
+.bet-card.pending{border-left-color:#ffb74d}
+.bet-card .pick{font-size:12.5px;margin-top:4px}
+.bet-actions{display:flex;gap:8px;margin-top:8px}
+.ledger-item{font-size:12.5px;padding:6px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between}
+.ledger-item .delta{font-weight:700}
+.delta.pos{color:var(--green)}.delta.zero{color:var(--gray)}
+/* 学院 */
+.acad-h{font-size:14px;font-weight:700;color:var(--green);margin:14px 2px 6px}
+details.acad{background:#fff;border-radius:11px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
+details.acad summary{padding:11px 14px;font-weight:600;font-size:14.5px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.acad summary::-webkit-details-marker{display:none}
+details.acad summary::after{content:"▾";color:var(--gray);font-size:12px}
+details.acad[open] summary::after{content:"▴"}
+details.acad .body{padding:0 14px 12px;font-size:13.5px;color:#333}
+details.acad .body p{margin-bottom:7px}
+details.acad .body b{color:var(--green)}
+/* 找场 */
+.venue-card .vname{font-weight:600;font-size:14.5px}
+.venue-meta{font-size:12px;color:var(--gray);margin-top:3px}
+.v-actions{display:flex;gap:8px;margin-top:9px}
+.v-actions a{flex:1;text-align:center;text-decoration:none;border-radius:8px;padding:8px 0;font-size:13.5px;font-weight:600}
+.a-call{background:#e3f2fd;color:#1565c0}
+.a-nav{background:var(--green-lt);color:var(--green)}
+/* 设置 */
+.selfcheck{font-size:12px;padding:6px 0;color:var(--gray)}
+.selfcheck b.ok{color:var(--green)}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:99;padding:20px}
+.dlg.show{display:flex}
+.dlg .box{background:#fff;border-radius:14px;padding:18px;max-width:340px;width:100%;max-height:82vh;overflow:auto}
+.dlg .box h3{margin-bottom:8px}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(27,43,27,.92);
+  color:#fff;padding:9px 18px;border-radius:20px;font-size:13.5px;z-index:200;display:none;white-space:nowrap}
+footer{padding:14px;text-align:center;font-size:11px;color:var(--gray)}
+details.fold{background:#fff;border-radius:11px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+details.fold summary{padding:11px 14px;font-weight:600;font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}
+details.fold summary::-webkit-details-marker{display:none}
+details.fold summary::after{content:"▾";color:var(--gray)}
+details.fold[open] summary::after{content:"▴"}
+details.fold .body{padding:0 14px 12px}
+.month-h{font-size:13px;font-weight:700;color:var(--green);margin:12px 2px 6px}
+.ev-card{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ev-body{flex:1}
+.ev-name{font-weight:600;font-size:14.5px}
+.ev-meta{font-size:12px;color:var(--gray);margin-top:3px}
+.fav{cursor:pointer;font-size:17px;filter:grayscale(1);opacity:.35;background:none;border:none}
+.fav.on{filter:none;opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <h1 id="logoBtn">🎾 网球王子<small>看懂比赛 · 参与比赛</small></h1>
+  <div class="hdr-r">
+    <span class="pts-chip" id="hdrPts">⭐ 0</span>
+    <span class="pts-chip" id="hdrName" style="cursor:pointer">👤</span>
+  </div>
+</header>
+
+<main>
+<!-- ================= TAB1 赛历 ================= -->
+<section class="tab active" id="tab-calendar">
+  <div class="card" id="nowTourCard"><h3>🕐 正在进行</h3><div class="muted">加载中…</div></div>
+  <div class="tour-strip" id="tourStrip"></div>
+  <div class="day-h" id="todayLine">今日赛程</div>
+  <div id="todayMatches"></div>
+
+  <details class="fold" style="margin-top:12px">
+    <summary>即将开始的赛事</summary>
+    <div class="body" id="upcomingList"></div>
+  </details>
+  <details class="fold">
+    <summary>全年赛历(2026-11 → 2027-11)</summary>
+    <div class="body">
+      <div class="chips" id="lvFilter" style="margin:8px 0">
+        <span class="chip on" data-lv="all">全部</span>
+        <span class="chip" data-lv="slam">大满贯</span>
+        <span class="chip" data-lv="finals">年终</span>
+        <span class="chip" data-lv="1000">1000赛</span>
+        <span class="chip" data-lv="fav">⭐只看收藏</span>
+      </div>
+      <div id="calendarList"></div>
+    </div>
+  </details>
+</section>
+
+<!-- ================= TAB2 比分 ================= -->
+<section class="tab" id="tab-score">
+  <div class="card sb-tools">
+    <button class="btn sec small" id="btnRefresh">🔄 刷新</button>
+    <label class="muted" style="display:flex;align-items:center;gap:4px;flex:1">
+      <input type="checkbox" id="autoRefresh" style="width:16px;height:16px;accent-color:var(--green)">30秒自动刷新
+    </label>
+    <button class="btn sec small" id="btnImpScore">📥 导入</button>
+  </div>
+  <div class="card">
+    <h3>📌 这页的比分怎么来</h3>
+    <p class="muted">比分数据存在本机:<b>①手动改</b>——点击任意一场比赛卡片,直接更新盘分/局分/状态(看电视直播时顺手点);<b>②导入</b>——每天粘贴一份比分快照JSON(数据小哥=AI,找它要"今日网球比分快照")。<b>刷新按钮</b>只重排本地数据,不联网。</p>
+  </div>
+  <div id="scoreboard"></div>
+  <div class="sb-upd" id="sbUpdated"></div>
+  <textarea id="impScoreArea" rows="5" style="display:none;margin-bottom:8px" placeholder='粘贴比分JSON,格式:{"updated":"11-06 18:00","matches":[{"tour":"巴黎大师赛","lv":"1000","gender":"M","round":"1/4决赛","time":"21:00","a":"谢尔顿","b":"保罗","status":"进行中","sets":["7-5"],"cur":"第二盘","curGame":"4-3"}]}'></textarea>
+  <button class="btn" id="btnDoImpScore" style="display:none;width:100%;margin-bottom:10px">确认导入(整表替换)</button>
+</section>
+
+<!-- ================= TAB3 学院 ================= -->
+<section class="tab" id="tab-academy">
+  <div class="card"><h3>📖 学院 · 看球最小知识集</h3>
+  <p class="muted">不做百科全书,只放看懂今晚比赛够用的东西。</p></div>
+  <div id="academyList"></div>
+</section>
+
+<!-- ================= TAB4 找场 ================= -->
+<section class="tab" id="tab-court">
+  <div class="card">
+    <h3>🏟️ 我的城市</h3>
+    <input type="text" id="cityInput" list="cityList" placeholder="输入城市,如:成都" autocomplete="off">
+    <datalist id="cityList"></datalist>
+    <p class="muted" style="margin-top:6px">场馆数据本地维护:点"+"添加你城市的球场,点击[🧭]唤起地图App导航,团购价参考美团。</p>
+  </div>
+  <div id="venueList"></div>
+  <div class="card" style="text-align:center">
+    <button class="btn sec" id="btnAddVenue" style="width:100%">＋ 添加场馆</button>
+  </div>
+
+  <div class="card" style="border:2px dashed var(--green);background:var(--green-lt)">
+    <h3>📣 约球卡生成器</h3>
+    <p class="muted" style="margin-bottom:8px">填好发到网球群,帖子一眼清楚。</p>
+    <div class="row" style="margin-bottom:7px"><select id="accVenue" style="flex:1"></select></div>
+    <div class="row" style="margin-bottom:7px">
+      <input type="text" id="accDate" placeholder="日期:周六 11.8" style="flex:1">
+      <input type="text" id="accTime" placeholder="时间:14:00-16:00" style="flex:1">
+    </div>
+    <div class="row" style="margin-bottom:7px">
+      <input type="text" id="accNeed" placeholder="缺几人:如 缺2" style="flex:1">
+      <input type="text" id="accLevel" placeholder="水平:新手局/进阶局" style="flex:1">
+    </div>
+    <input type="text" id="accContact" placeholder="联系方式:微信号(可选)" style="margin-bottom:8px">
+    <button class="btn" id="btnGenAcc" style="width:100%">生成约球卡</button>
+    <textarea id="accOut" rows="7" style="margin-top:8px;display:none;font-size:13px" readonly></textarea>
+    <div class="row" style="margin-top:8px;display:none" id="accBtns">
+      <button class="btn sec" id="btnCopyAcc">📋 复制</button>
+      <button class="btn sec" id="btnShareAcc">📤 分享</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TAB5 我的 ================= -->
+<section class="tab" id="tab-mine">
+  <div class="card profile-card">
+    <div class="top">
+      <div class="avatar" id="avatarEl">🎾</div>
+      <div style="flex:1">
+        <div class="pname" id="pnameEl">网球新人</div>
+        <div class="ptitle" id="ptitleEl">新球迷 · 刚刚开始</div>
+      </div>
+      <button class="btn small" id="btnEditProfile" style="background:rgba(255,255,255,.2);color:#fff">编辑</button>
+    </div>
+    <div class="pstats">
+      <div><div class="v" id="minePts">0</div><div class="k">积分</div></div>
+      <div><div class="v" id="mineTotal">0</div><div class="k">总预测</div></div>
+      <div><div class="v" id="mineRate">—</div><div class="k">命中率</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎯 快速表态</h3>
+    <div class="row" style="margin-bottom:7px">
+      <input type="text" id="betA" placeholder="球员A" style="flex:1">
+      <span class="muted">vs</span>
+      <input type="text" id="betB" placeholder="球员B" style="flex:1">
+    </div>
+    <input type="text" id="betEvent" placeholder="赛事备注(可选)" style="margin-bottom:8px">
+    <div class="row">
+      <button class="btn" id="pickA">押 A 赢</button>
+      <button class="btn sec" id="pickB">押 B 赢</button>
+    </div>
+    <button class="btn sec" id="btnFromAnalysis" style="margin-top:8px;width:100%">← 用最近一次预测的对阵</button>
+  </div>
+
+  <div class="card">
+    <h3>⏳ 待开奖 <span class="muted" id="pendingCnt"></span></h3>
+    <div id="pendingList"></div>
+  </div>
+  <div class="card">
+    <h3>✅ 已结算 <span class="muted" id="doneCnt"></span></h3>
+    <div id="doneList"></div>
+  </div>
+  <div class="card">
+    <h3>🎁 奖品池</h3>
+    <textarea id="prizeText" rows="2" placeholder="月末积分第一名,送网球3颗!"></textarea>
+    <p class="muted" style="margin-top:5px">纯积分游戏:不收参与费、不发现金、不涉任何赌博。</p>
+  </div>
+  <div class="card">
+    <h3>📒 账本</h3>
+    <div id="ledgerList"></div>
+  </div>
+  <div class="card" style="text-align:center">
+    <button class="btn sec" id="btnOpenSettings" style="width:100%">⚙️ 设置 · 数据维护</button>
+  </div>
+</section>
+
+<!-- ================= 内页:预测(分析器) ================= -->
+<section class="tab" id="tab-analyze">
+  <div class="backbar"><button id="btnBackAnalyze">‹ 返回</button><h2>🎯 预测这场</h2></div>
+  <div class="card">
+    <div class="vs">
+      <div class="side">
+        <label>球员A</label>
+        <input type="text" id="paName" list="playerList" placeholder="输入或选球员名" autocomplete="off">
+        <div class="psrc" id="paSrc"></div>
+      </div>
+      <div class="x">VS</div>
+      <div class="side">
+        <label>球员B</label>
+        <input type="text" id="pbName" list="playerList" placeholder="输入或选球员名" autocomplete="off">
+        <div class="psrc" id="pbSrc"></div>
+      </div>
+    </div>
+    <datalist id="playerList"></datalist>
+    <div class="chips" id="hotChips"></div>
+    <div class="slider-row" style="margin-top:12px">
+      <span class="muted" style="width:74px">A 发球得分率</span>
+      <input type="range" id="paP" min="50" max="85" step="0.5" value="62">
+      <span class="pval" id="paPv">62.0%</span>
+    </div>
+    <div class="slider-row">
+      <span class="muted" style="width:74px">B 发球得分率</span>
+      <input type="range" id="pbP" min="50" max="85" step="0.5" value="62">
+      <span class="pval" id="pbPv">62.0%</span>
+    </div>
+    <p class="muted" style="margin-top:5px">发球分得分率=自己发球的分里赢下的比例。库外球员按排名估算:</p>
+    <div class="row" style="margin-top:6px">
+      <input type="number" id="estRank" placeholder="排名(如35)" style="flex:1" inputmode="numeric">
+      <button class="btn sec small" id="btnEstA">填给A</button>
+      <button class="btn sec small" id="btnEstB">填给B</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row">
+      <div class="seg" style="flex:1">
+        <button id="bo3" class="on">三盘两胜</button>
+        <button id="bo5">五盘三胜(大满贯)</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:9px">
+      <label class="muted" style="font-size:13px">第一盘A先发</label>
+      <input type="checkbox" id="aFirstServe" checked style="width:18px;height:18px;accent-color:var(--green)">
+    </div>
+    <button class="btn" id="btnCalc" style="margin-top:10px;width:100%">开始计算</button>
+    <div class="selfcheck" id="selfCheck"></div>
+  </div>
+  <div id="calcResult"></div>
+</section>
+
+<!-- ================= 内页:设置 ================= -->
+<section class="tab" id="tab-settings">
+  <div class="backbar"><button id="btnBackSettings">‹ 返回</button><h2>⚙️ 设置</h2></div>
+  <div class="card">
+    <h3>🔬 模型自检</h3>
+    <div class="selfcheck" id="settingsCheck">未运行</div>
+    <p class="muted">局胜率锚点:p=0.6→73.57%、p=0.7→90.08%(马尔可夫解析解)</p>
+  </div>
+  <div class="card">
+    <h3>🎾 球员库 <span class="muted" id="playerCnt"></span></h3>
+    <div id="playerTable" style="font-size:12.5px;max-height:220px;overflow:auto"></div>
+    <p class="muted" style="margin-top:6px">内置值≈2025赛季公开统计估值(±1~2pp),可在ATP/WTA官网校准。</p>
+  </div>
+  <div class="card">
+    <h3>📥 数据导入(JSON)</h3>
+    <p class="muted">球员库(按姓名合并):<code>[{"name":"辛纳","gender":"M","p":0.735}]</code></p>
+    <textarea id="impPlayers" rows="2" style="margin-top:4px" placeholder='粘贴球员JSON数组'></textarea>
+    <p class="muted" style="margin-top:6px">全年赛历(整表替换):<code>[{"month":"2026-11","events":[...]}]</code></p>
+    <textarea id="impCalendar" rows="2" style="margin-top:4px" placeholder='粘贴赛历JSON数组'></textarea>
+    <p class="muted" style="margin-top:6px">场馆(追加):<code>[{"name":"xx网球场","city":"成都","phone":"138...","courts":4}]</code></p>
+    <textarea id="impVenues" rows="2" style="margin-top:4px" placeholder='粘贴场馆JSON数组'></textarea>
+    <p class="muted" style="margin-top:6px">比分快照(整表替换,同比分页导入):<code>{"updated":"...","matches":[...]}</code></p>
+    <textarea id="impScores" rows="2" style="margin-top:4px" placeholder='粘贴比分快照JSON'></textarea>
+    <div class="row wrap" style="margin-top:9px">
+      <button class="btn sec small" id="btnImpPlayers">导入球员</button>
+      <button class="btn sec small" id="btnImpCalendar">导入赛历</button>
+      <button class="btn sec small" id="btnImpVenues">导入场馆</button>
+      <button class="btn sec small" id="btnImpScores">导入比分</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📤 导出 / 清空</h3>
+    <div class="row">
+      <button class="btn sec small" id="btnExport">导出全部数据</button>
+      <button class="btn danger small" id="btnClear">清空竞猜与积分</button>
+    </div>
+    <textarea id="exportOut" rows="4" style="margin-top:8px;display:none"></textarea>
+    <button class="btn sec small" id="btnCopyExport" style="display:none;margin-top:6px">📋 复制备份</button>
+  </div>
+  <div class="card">
+    <h3>⚠️ 声明</h3>
+    <p class="muted" style="line-height:1.7">①《网球王子》为个人自用分析工具,与同名动漫及Prince(王子)品牌无关;②球员数据为公开统计估值,仅供学习参考,不构成任何投注建议;③竞猜为纯积分游戏:不收参与费、不发现金奖励、不导流任何博彩平台;④比分/赛程数据可能滞后,以官方发布为准。</p>
+  </div>
+  <footer>《网球王子》v2.0 · 单文件 · 数据存本机<br>马尔可夫解析引擎 · 无服务器 · 无依赖</footer>
+</section>
+</main>
+
+<nav>
+  <button data-tab="tab-calendar" class="active"><span class="ic">📅</span>赛历</button>
+  <button data-tab="tab-score"><span class="ic">🎯</span>猜猜</button>
+  <button data-tab="tab-academy"><span class="ic">📖</span>学院</button>
+  <button data-tab="tab-court"><span class="ic">🏟️</span>找场</button>
+  <button data-tab="tab-mine"><span class="ic">👤</span>我的</button>
+</nav>
+
+<!-- 弹窗:改比分 -->
+<div class="dlg" id="scoreDlg">
+  <div class="box">
+    <h3 id="scoreDlgTitle">更新比分</h3>
+    <p class="muted" id="scoreDlgWho" style="margin-bottom:9px">状态按开赛时间自动推算;这里手动更新盘分、当前局和最终胜方。</p>
+    <div class="row" style="margin-bottom:9px">
+      <input type="text" id="sdCur" placeholder="进行到:如 第二盘" style="flex:1">
+      <input type="text" id="sdCurGame" placeholder="当前局小分:如 30-15" style="flex:1">
+    </div>
+    <div class="row" style="margin-bottom:9px">
+      <input type="text" id="sdSet1" placeholder="盘1:如 7-5" style="flex:1">
+      <input type="text" id="sdSet2" placeholder="盘2" style="flex:1">
+      <input type="text" id="sdSet3" placeholder="盘3" style="flex:1">
+    </div>
+    <label class="muted">胜方(填了=标记已结束;清空=恢复自动状态)</label>
+    <select id="sdWinner" style="margin:4px 0 12px">
+      <option value="">尚未决出(自动推算)</option>
+      <option value="a">球员A胜</option>
+      <option value="b">球员B胜</option>
+    </select>
+    <div class="row">
+      <button class="btn sec" id="sdCancel">取消</button>
+      <button class="btn" id="sdSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 弹窗:猜猜竞猜卡 -->
+<div class="dlg" id="guessDlg">
+  <div class="box">
+    <h3 id="ggTitle">猜猜 · 这场谁赢?</h3>
+    <p class="muted" id="ggInfo" style="margin-bottom:4px"></p>
+    <p class="muted" id="ggTv" style="margin-bottom:2px"></p>
+    <div class="gg-vs" id="ggVs"></div>
+    <div class="row">
+      <button class="btn" id="ggA">A 胜</button>
+      <button class="btn sec" id="ggB">B 胜</button>
+    </div>
+    <button class="btn sec" id="ggAnalyze" style="margin-top:8px;width:100%">📊 看看两家胜率</button>
+    <p class="muted" style="margin-top:8px">猜中+10积分 · 去赛后「我的」里录结果</p>
+  </div>
+</div>
+
+<!-- 弹窗:编辑资料 -->
+<div class="dlg" id="profileDlg">
+  <div class="box">
+    <h3>我的资料</h3>
+    <label class="muted">昵称</label>
+    <input type="text" id="pfName" placeholder="给自己起个名字" style="margin:4px 0 10px" maxlength="12">
+    <label class="muted">头像</label>
+    <div class="chips" id="pfAvatars" style="margin:6px 0 12px"></div>
+    <div class="row">
+      <button class="btn sec" id="pfCancel">取消</button>
+      <button class="btn" id="pfSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 弹窗:添加场馆 -->
+<div class="dlg" id="venueDlg">
+  <div class="box">
+    <h3>添加场馆</h3>
+    <input type="text" id="vName" placeholder="场馆名称*" style="margin-bottom:7px">
+    <input type="text" id="vAddr" placeholder="地址(越详细导航越准)" style="margin-bottom:7px">
+    <input type="tel" id="vPhone" placeholder="电话(可选)" style="margin-bottom:7px">
+    <div class="row" style="margin-bottom:7px">
+      <input type="number" id="vCourts" placeholder="片数" style="flex:1">
+      <input type="text" id="vSurf" placeholder="场地:硬地/红土" style="flex:1">
+    </div>
+    <input type="text" id="vPrice" placeholder="参考价:如 40元/时" style="margin-bottom:10px">
+    <div class="row">
+      <button class="btn sec" id="vCancel">取消</button>
+      <button class="btn" id="vSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+'use strict';
+/* ================= 马尔可夫引擎(16项冒烟测试通过,勿动) ================= */
+function gameWinProb(p){const q=1-p;return p**4*(1+4*q+10*q*q)+20*p**3*q**3*(p*p)/(1-2*p*q);}
+function tbWinProb(pA,pB,aFirst){
+  const memo=new Map();
+  function serveRate(idx){let s;if(idx===1)s=aFirst;else{const k=Math.floor(idx/2);s=(k%2===0)?aFirst:!aFirst;}return s?pA:(1-pB);}
+  function rec(a,b){
+    if(a>=7&&a-b>=2)return 1;
+    if(b>=7&&b-a>=2)return 0;
+    if(a===b&&a>=6){const w2=pA*(1-pB),l2=(1-pA)*pB;return w2/(w2+l2);}
+    const key=a*100+b;
+    if(memo.has(key))return memo.get(key);
+    const pw=serveRate(a+b+1);
+    const res=pw*rec(a+1,b)+(1-pw)*rec(a,b+1);
+    memo.set(key,res);return res;
+  }
+  return rec(0,0);
+}
+function setWinProb(pA,pB,aFirst){
+  const gA=gameWinProb(pA),hA=1-gameWinProb(pB);
+  const memo=new Map();
+  function rec(i,j,aServes){
+    if(i>=6&&j<=4)return 1;
+    if(j>=6&&i<=4)return 0;
+    if(i===7)return 1; if(j===7)return 0;
+    if(i===6&&j===6)return tbWinProb(pA,pB,!aServes);
+    const key=i*100+j*2+(aServes?1:0);
+    if(memo.has(key))return memo.get(key);
+    const pw=aServes?gA:hA;
+    const res=pw*rec(i+1,j,!aServes)+(1-pw)*rec(i,j+1,!aServes);
+    memo.set(key,res);return res;
+  }
+  return rec(0,0,aFirst);
+}
+function setGamesExpect(pA,pB,aFirst){
+  const gA=gameWinProb(pA),hA=1-gameWinProb(pB);
+  const memo=new Map();
+  function rec(i,j,aServes){
+    if(i>=6&&j<=4)return 0; if(j>=6&&i<=4)return 0;
+    if(i===7||j===7)return 0;
+    if(i===6&&j===6)return 13;
+    const key=i*100+j*2+(aServes?1:0);
+    if(memo.has(key))return memo.get(key);
+    const pw=aServes?gA:hA;
+    const res=1+pw*rec(i+1,j,!aServes)+(1-pw)*rec(i,j+1,!aServes);
+    memo.set(key,res);return res;
+  }
+  return rec(0,0,aFirst);
+}
+function matchAnalysis(pA,pB,bestOf){
+  const sets=bestOf===5?5:3, need=Math.ceil(sets/2), P=[],G=[];
+  for(let n=0;n<sets;n++){const af=(n%2===0);P.push(setWinProb(pA,pB,af));G.push(setGamesExpect(pA,pB,af));}
+  const dist={};let win=0,avgGames=0;
+  function enumSeq(aPts,bPts,n,prob){
+    if(aPts===need||bPts===need){
+      const sc=`${aPts}-${bPts}`;
+      dist[sc]=(dist[sc]||0)+prob;
+      if(aPts>bPts)win+=prob;
+      avgGames+=prob*G.slice(0,n).reduce((s,x)=>s+x,0);
+      return;
+    }
+    enumSeq(aPts+1,bPts,n+1,prob*P[n]);
+    enumSeq(aPts,bPts+1,n+1,prob*(1-P[n]));
+  }
+  enumSeq(0,0,0,1);
+  return {win,dist,avgGames};
+}
+
+/* ================= 静态数据 ================= */
+const PLAYERS=[
+  {name:"辛纳",gender:"M",p:0.735},{name:"阿尔卡拉斯",gender:"M",p:0.72},
+  {name:"德约科维奇",gender:"M",p:0.70},{name:"兹维列夫",gender:"M",p:0.715},
+  {name:"弗里茨",gender:"M",p:0.685},{name:"梅德韦杰夫",gender:"M",p:0.665},
+  {name:"鲁德",gender:"M",p:0.665},{name:"穆塞蒂",gender:"M",p:0.66},
+  {name:"鲁内",gender:"M",p:0.66},{name:"德米纳尔",gender:"M",p:0.65},
+  {name:"蒂亚福",gender:"M",p:0.70},{name:"布布利克",gender:"M",p:0.67},
+  {name:"谢尔顿",gender:"M",p:0.70},{name:"保罗",gender:"M",p:0.675},
+  {name:"菲斯",gender:"M",p:0.68},
+  {name:"萨巴伦卡",gender:"W",p:0.635},{name:"斯瓦泰克",gender:"W",p:0.605},
+  {name:"郑钦文",gender:"W",p:0.625},{name:"高芙",gender:"W",p:0.605},
+  {name:"莱巴金娜",gender:"W",p:0.645},{name:"佩古拉",gender:"W",p:0.615},
+  {name:"大坂直美",gender:"W",p:0.625},{name:"保利尼",gender:"W",p:0.585},
+  {name:"凯斯",gender:"W",p:0.63},{name:"米拉·安德列娃",gender:"W",p:0.60},
+  {name:"施内德",gender:"W",p:0.59},{name:"纳瓦罗",gender:"W",p:0.575}
+];
+/* 进行中/即将开始的赛事(手动/导入维护) */
+const TOURS=[
+  {name:"巴黎大师赛",lv:"1000",gender:"ATP",place:"巴黎",surface:"硬地·室内",dates:"11.2-11.9",stage:"1/4决赛",status:"live",note:"年度最后一个1000赛"},
+  {name:"WTA香港站",lv:"250",gender:"WTA",place:"香港",surface:"硬地",dates:"11.2-11.8",stage:"1/4决赛",status:"live",note:""},
+  {name:"WTA金奈站",lv:"250",gender:"WTA",place:"金奈",surface:"硬地",dates:"11.2-11.8",stage:"1/4决赛",status:"live",note:""},
+  {name:"WTA125K罗安达站",lv:"challenger",gender:"WTA",place:"罗安达",surface:"红土",dates:"11.2-11.8",stage:"1/4决赛",status:"live",note:""},
+  {name:"ATP挑战赛·台北站",lv:"challenger",gender:"ATP",place:"台北",surface:"硬地",dates:"11.2-11.8",stage:"1/4决赛",status:"live",note:""},
+  {name:"ATP挑战赛·塔兰托站",lv:"challenger",gender:"ATP",place:"塔兰托",surface:"红土",dates:"11.2-11.8",stage:"1/4决赛",status:"live",note:""},
+  {name:"ATP年终总决赛",lv:"finals",gender:"ATP",place:"都灵",surface:"硬地·室内",dates:"11月中旬",stage:"入围8人",status:"soon",note:"都灵周期内(待官方)"},
+  {name:"WTA年终总决赛",lv:"finals",gender:"WTA",place:"利雅得",surface:"硬地·室内",dates:"11月上旬",stage:"待官方",status:"soon",note:""}
+];
+/* 今日比分快照(2026-11-06 真实数据:巴黎大师赛QF按官方秩序册+央视;小站按雷速截图)
+   start=开赛时刻(HH:MM),day=0今天/1明天,durMin=预计时长(分钟,状态推算用),tv=转播平台(空=显示全平台) */
+const SEED_MATCHES={
+  updated:"11-06 17:30",
+  matches:[
+    {tour:"巴黎大师赛",lv:"1000",gender:"ATP",round:"1/4决赛",time:"21:00",court:"中心场",start:"21:00",day:0,tv:["优酷","央视频"],
+     a:"谢尔顿 [3]",b:"保罗 [12]",status:"未开始",sets:[],cur:"",curGame:"",winner:""},
+    {tour:"巴黎大师赛",lv:"1000",gender:"ATP",round:"1/4决赛",time:"约22:30 接续",court:"中心场",start:"22:30",day:0,tv:["优酷","央视频"],
+     a:"范阿舍",b:"土方凛辉 [Q]",status:"未开始",sets:[],cur:"",curGame:"",winner:""},
+    {tour:"巴黎大师赛",lv:"1000",gender:"ATP",round:"1/4决赛",time:"次日约03:30",court:"中心场",start:"03:30",day:1,tv:["优酷","央视频"],
+     a:"弗里茨 [11]",b:"阿尔卡拉斯 [2]",status:"未开始",sets:[],cur:"",curGame:"",winner:""},
+    {tour:"巴黎大师赛",lv:"1000",gender:"ATP",round:"1/4决赛",time:"次日接续",court:"中心场",start:"05:00",day:1,tv:["优酷","央视频"],
+     a:"鲁德",b:"博尔热斯 [LL]",status:"未开始",sets:[],cur:"",curGame:"",winner:""},
+    {tour:"ATP挑战赛·台北站",lv:"challenger",gender:"ATP",round:"1/4决赛",time:"15:55",court:"",start:"15:55",day:0,
+     a:"黄泽林",b:"萨姆瑞",status:"进行中",sets:["7-5","4-1"],cur:"第二盘",curGame:"15-30",winner:""},
+    {tour:"WTA香港站",lv:"250",gender:"WTA",round:"1/4决赛",time:"16:55",court:"",start:"16:55",day:0,tv:"优酷",
+     a:"科斯蒂亚",b:"舒布拉泽",status:"进行中",sets:[],cur:"第一盘",curGame:"",curGameA:"1",curGameB:"4",winner:""},
+    {tour:"WTA125K罗安达站",lv:"challenger",gender:"WTA",round:"1/4决赛",time:"17:00",court:"",start:"17:00",day:0,durMin:90,
+     a:"李宗钰/诺瓦克",b:"纳希玛娜/奥库托伊",status:"进行中",sets:[],cur:"第一盘",curGame:"",curGameA:"3",curGameB:"2",winner:""},
+    {tour:"WTA金奈站",lv:"250",gender:"WTA",round:"1/4决赛",time:"17:30",court:"",start:"17:30",day:0,tv:"优酷",
+     a:"曾丽美",b:"库德摩托娃",status:"未开始",sets:[],cur:"",curGame:"",winner:""},
+    {tour:"ATP挑战赛·塔兰托站",lv:"challenger",gender:"ATP",round:"1/4决赛",time:"17:30",court:"",start:"17:30",day:0,
+     a:"姆瓦",b:"马蒂诺",status:"未开始",sets:[],cur:"",curGame:"",winner:""}
+  ]
+};
+/* 直播平台跳转(搜索页URL,手机打开后可引导进APP;版权可能变动,以平台实际为准) */
+const TV_PLATFORMS=[
+  {name:"优酷",url:k=>`https://m.youku.com/search/index?keyword=${encodeURIComponent(k)}`},
+  {name:"爱奇艺",url:k=>`https://so.iqiyi.com/so/q_${encodeURIComponent(k)}`},
+  {name:"央视频",url:k=>`https://www.yangshipin.cn/search?keyword=${encodeURIComponent(k)}`}
+];
+function tvLinksHTML(m){
+  let names;
+  if(!m.tv)names=TV_PLATFORMS.map(p=>p.name);          // 未标注=显示全平台
+  else if(Array.isArray(m.tv))names=m.tv;               // 数组=多平台
+  else names=[m.tv];                                     // 字符串=单平台
+  const list=names.map(n=>TV_PLATFORMS.find(p=>p.name===n||p.name.indexOf(n)>=0||n.indexOf(p.name)>=0)).filter(Boolean);
+  const final=list.length?list:TV_PLATFORMS;
+  return `<span style="font-size:11px;margin-left:6px">📺</span>`+final.map(p=>
+    ` <a href="${p.url(m.tour)}" target="_blank" style="color:#1565c0;text-decoration:none;font-size:11px">${p.name}</a>`).join("");
+}
+/* 状态自动推算:未到点=未开始(显示几点开赛);到点后=进行中;超预计时长=已结束。statusOverride=手动录胜方时锁定 */
+function statusOf(m){
+  if(m.statusOverride)return m.statusOverride;
+  if(!m.start)return m.status||"未开始";
+  const parts=String(m.start).split(":").map(Number);
+  if(parts.length<2||isNaN(parts[0]))return m.status||"未开始";
+  const now=new Date();
+  const st=new Date(now.getFullYear(),now.getMonth(),now.getDate()+(m.day||0),parts[0],parts[1]||0,0);
+  const dur=(m.durMin||150)*60000;
+  if(now<st)return "未开始";
+  if(now<new Date(st.getTime()+dur))return "进行中";
+  return "已结束";
+}
+const LV_NAMES={slam:"大满贯",finals:"年终",1000:"1000赛",500:"500赛",250:"250赛",tour:"巡回赛",challenger:"挑战赛/125K",team:"团体/其他"};
+const CALENDAR=[
+  {month:"2026年11月",events:[
+    {name:"WTA年终总决赛",lv:"finals",place:"利雅得",surface:"硬地·室内",date:"11月上中旬(待官方)"},
+    {name:"ATP年终总决赛",lv:"finals",place:"都灵",surface:"硬地·室内",date:"11月中旬(待官方)"},
+    {name:"戴维斯杯决赛周",lv:"team",place:"待官宣",surface:"硬地",date:"11月下旬(待官方)"}
+  ]},
+  {month:"2026年12月",events:[
+    {name:"ATP新生代总决赛(Next Gen)",lv:"finals",place:"待官宣",surface:"硬地·室内",date:"12月(待官方)"},
+    {name:"休赛期 · 各地表演赛",lv:"team",place:"—",surface:"—",date:"整月"}
+  ]},
+  {month:"2027年1月",events:[
+    {name:"联合杯(混合团体赛)",lv:"team",place:"悉尼/珀斯",surface:"硬地",date:"1月初(待官方)"},
+    {name:"阿德莱德国际",lv:"250",place:"阿德莱德",surface:"硬地",date:"1月中旬"},
+    {name:"奥克兰公开赛",lv:"250",place:"奥克兰",surface:"硬地",date:"1月上旬"},
+    {name:"澳大利亚网球公开赛 🏆",lv:"slam",place:"墨尔本公园",surface:"硬地",date:"1月中下旬(待官方)"}
+  ]},
+  {month:"2027年2月",events:[
+    {name:"达拉斯公开赛",lv:"500",place:"达拉斯",surface:"硬地·室内",date:"2月上旬"},
+    {name:"鹿特丹公开赛",lv:"500",place:"鹿特丹",surface:"硬地·室内",date:"2月上旬"},
+    {name:"卡塔尔公开赛",lv:"1000",place:"多哈(WTA)",surface:"硬地",date:"2月中旬"},
+    {name:"迪拜锦标赛",lv:"1000",place:"迪拜(WTA)",surface:"硬地",date:"2月中下旬"},
+    {name:"马赛/蒙彼利埃/德尔雷海滩",lv:"250",place:"欧洲+美国",surface:"硬地",date:"整月分散"}
+  ]},
+  {month:"2027年3月",events:[
+    {name:"印第安维尔斯公开赛(阳光双赛①)",lv:"1000",place:"加州沙漠",surface:"硬地(慢)",date:"3月上中旬"},
+    {name:"迈阿密公开赛(阳光双赛②)",lv:"1000",place:"迈阿密",surface:"硬地",date:"3月中下旬"}
+  ]},
+  {month:"2027年4月",events:[
+    {name:"蒙特卡洛大师赛",lv:"1000",place:"蒙特卡洛(ATP)",surface:"红土",date:"4月上旬"},
+    {name:"查尔斯顿公开赛",lv:"500",place:"查尔斯顿(WTA)",surface:"绿土",date:"4月初"},
+    {name:"巴塞罗那公开赛",lv:"500",place:"巴塞罗那(ATP)",surface:"红土",date:"4月中旬"},
+    {name:"马德里公开赛",lv:"1000",place:"马德里",surface:"红土(高原)",date:"4月下旬"}
+  ]},
+  {month:"2027年5月",events:[
+    {name:"罗马公开赛",lv:"1000",place:"罗马",surface:"红土",date:"5月上中旬"},
+    {name:"法国网球公开赛 🏆",lv:"slam",place:"罗兰加洛斯·巴黎",surface:"红土",date:"5月末-6月初(待官方)"}
+  ]},
+  {month:"2027年6月",events:[
+    {name:"斯图加特/哈勒(草地启动)",lv:"500",place:"德国(ATP)",surface:"草地",date:"6月上旬"},
+    {name:"女王杯/伊斯特本",lv:"500",place:"伦敦/海边(ATP+WTA)",surface:"草地",date:"6月中旬"},
+    {name:"温布尔登锦标赛 🏆",lv:"slam",place:"全英俱乐部·伦敦",surface:"草地",date:"6月末-7月初(待官方)"}
+  ]},
+  {month:"2027年7月",events:[
+    {name:"温网后半程+决赛周",lv:"slam",place:"伦敦",surface:"草地",date:"7月初"},
+    {name:"华盛顿公开赛",lv:"500",place:"华盛顿",surface:"硬地",date:"7月下旬"}
+  ]},
+  {month:"2027年8月",events:[
+    {name:"加拿大公开赛",lv:"1000",place:"多伦多/蒙特利尔",surface:"硬地",date:"8月上旬"},
+    {name:"辛辛那提大师赛",lv:"1000",place:"辛辛那提",surface:"硬地(快)",date:"8月中旬"},
+    {name:"温斯顿塞勒姆",lv:"250",place:"北卡",surface:"硬地",date:"8月下旬"},
+    {name:"美国网球公开赛 🏆",lv:"slam",place:"法拉盛·纽约",surface:"硬地(快)",date:"8月末-9月初(待官方)"}
+  ]},
+  {month:"2027年9月",events:[
+    {name:"美网后半程+决赛周",lv:"slam",place:"纽约",surface:"硬地",date:"9月上旬"},
+    {name:"成都/珠海公开赛",lv:"250",place:"成都/珠海",surface:"硬地",date:"9月中旬"},
+    {name:"日本公开赛",lv:"500",place:"东京",surface:"硬地",date:"9月下旬"},
+    {name:"中国网球公开赛(中网)",lv:"500",place:"北京(ATP500+WTA1000)",surface:"硬地",date:"9月末-10月初"}
+  ]},
+  {month:"2027年10月",events:[
+    {name:"上海大师赛",lv:"1000",place:"上海",surface:"硬地(快)",date:"10月上旬"},
+    {name:"武汉公开赛",lv:"1000",place:"武汉(WTA)",surface:"硬地",date:"10月上旬"},
+    {name:"宁波公开赛",lv:"250",place:"宁波",surface:"硬地",date:"10月中旬"},
+    {name:"维也纳公开赛",lv:"500",place:"维也纳",surface:"硬地·室内",date:"10月下旬"},
+    {name:"六王大满贯(表演赛,无积分)",lv:"team",place:"利雅得",surface:"硬地",date:"10月中旬(待官宣)"}
+  ]},
+  {month:"2027年11月",events:[
+    {name:"巴黎大师赛",lv:"1000",place:"巴黎",surface:"硬地·室内",date:"11月初"},
+    {name:"WTA年终总决赛",lv:"finals",place:"利雅得(周期内)",surface:"硬地·室内",date:"11月上旬(待官方)"},
+    {name:"ATP年终总决赛",lv:"finals",place:"待官宣",surface:"硬地·室内",date:"11月中旬(待官方)"},
+    {name:"戴维斯杯决赛周",lv:"team",place:"待官宣",surface:"硬地",date:"11月下旬"}
+  ]}
+];
+const ACADEMY=[
+ {grp:"一档 · 看球必备(先读这四张)",cards:[
+  {id:"ac-score",t:"计分怎么念",b:`<p>网球计分是 <b>0 → 15 → 30 → 40 → 赢下该局</b>(0分念作 <b>Love</b>)。</p><p>40-40 叫 <b>平分(Deuce)</b>:此后谁先<b>连赢两分</b>谁赢局——第一分叫<b>占先(Advantage)</b>。</p><p>例:比分页"15-30"的小分=当前局里A得1分B得2分。为什么这么数?法国宫廷游戏的<b>钟面计分</b>:每分转15分钟,45简读40。</p>`},
+  {id:"ac-gsm",t:"局 → 盘 → 赛",b:`<p><b>4分 = 1局(Game)</b>;赢6局且净胜2局 = <b>1盘(Set)</b>;盘数定胜负。</p><p>赛制:<b>三盘两胜</b>(巡回赛+女子全部)和<b>五盘三胜</b>(仅大满贯男单)。</p><p>比分页的"盘1 盘2 盘3"三列,就是逐盘的局分(6-4这种)。</p>`},
+  {id:"ac-tb",t:"抢七(Tie-break)",b:`<p>局分<b>6-6</b>时打抢七:先到<b>7分且净胜2分</b>者赢该盘,盘分记7-6。</p><p>抢七第1分一人发,之后<b>每2分换发</b>。大满贯<b>决胜盘</b>现在是<b>10分抢七</b>。</p>`},
+  {id:"ac-jargon",t:"解说黑话表",b:`<p><b>Ace</b>:发球直接得分。<b>双误</b>:两次发球全失误送分。</p><p><b>破发(Break)</b>:接发方赢下发球局。<b>保发(Hold)</b>:发球方守住。<b>Love Game</b>:一分未失赢局。</p><p><b>制胜分</b>:主动打出对方碰不到的球。<b>非受迫性失误</b>:自己打丢。<b>擦网</b>:碰网带落入对方场=重发。</p>`}
+ ]},
+ {grp:"二档 · 场地与球",cards:[
+  {id:"ac-surface",t:"场地四兄弟",b:`<p><b>硬地</b>:最主流(澳网/美网/中网/上海/巴黎)。球速中快、弹跳规则。</p><p><b>红土</b>:最慢,回合超多,跑动为王(法网,纳达尔14冠)。</p><p><b>草地</b>:最快,弹跳低,发球大炮天堂,赛季仅约一个月(温网)。</p><p><b>室内</b>:无风无雨,球速偏快(巴黎大师赛、年终)。</p>`},
+  {id:"ac-cpr",t:"球速快慢谁说了算",b:`<p>ITF给场地打分:<b>Court Pace Rating 1-5级</b>。同为硬地,美网偏快、澳网偏慢。</p><p>同一个球员红土和草地判若两人——职业数据都按场地拆分。预测工具的"场地修正"原理就在这。</p>`},
+  {id:"ac-ball",t:"一颗网球的秘密",b:`<p>比赛用球是<b>荧光黄</b>(1970年代为电视转播改色)。</p><p><b>罐装有压球</b>:从2.54米落下反弹1.35-1.47米才算合格。比赛<b>每9局换新球</b>——旧球掉毛变重变慢。</p>`},
+  {id:"ac-rank",t:"排名和赛事级别",b:`<p>排名=<b>52周滚动积分</b>,取18站最佳。级别金字塔:<b>大满贯2000分</b> > 年终1500 > <b>1000赛</b> > <b>500赛</b> > <b>250赛</b>。</p><p>现在进行的巴黎大师赛就是1000赛——年度最后一个,积分奖金都是冲刺年终的关键。</p>`}
+ ]},
+ {grp:"三档 · 上场准备",cards:[
+  {id:"ac-shoe",t:"👟 球鞋怎么选",b:`<p><b>跑鞋≠网球鞋</b>:网球是横向急停急转,穿跑鞋=崴脚预备。</p><p>三要素:<b>横向支撑</b>、<b>鞋头耐磨</b>、<b>缓震</b>。新手唯一答案:<b>All Court全场鞋</b>。</p><p>预算:国产200-400元够用。尺码留一指。</p>`},
+  {id:"ac-racket",t:"🎾 球拍怎么选",b:`<p>新手三参数:<b>280-300g</b>、<b>拍面100in²</b>、硬度偏高(省力)。手柄<b>G2宁小勿大</b>。</p><p>预算路线:<b>二手大牌50-150元</b>(穷学首选)→国产全新200-500→大牌入门500-900。</p><p>避坑:碳铝一体是玩具;260g以下超轻拍伤肘。</p>`},
+  {id:"ac-string",t:"🧵 线的磅数怎么选",b:`<p><b>低磅=弹=省力但失控;高磅=控=准但费力</b>。新手<b>48-55磅,横竖同磅</b>。</p><p>线种:合成尼龙=新手默认;聚酯线=新手碰=网球肘快递;羊肠线不必。</p><p>线会<b>掉磅</b>,打20-30小时该换,别等断线。</p>`}
+ ]},
+ {grp:"四档 · 网球的钱",cards:[
+  {id:"ac-money",t:"💰 奖金金字塔",b:`<p>单打冠军奖金(2025口径):<b>挑战赛</b>几千~2万美元 → <b>250</b>≈15万 → <b>500</b>≈40-70万 → <b>1000</b>≈100万 → <b>大满贯250-360万</b>美元。</p><p>奖金的30-50%要养团队,<b>排名100外基本亏钱打球</b>。沙特六王表演赛冠军<b>600万美元</b>=网球史单站最高,但无积分。</p>`},
+  {id:"ac-finals",t:"👑 年终为什么值得抢",b:`<p>三笔账:<b>积分</b>全胜最高1500分;<b>奖金</b>全胜约480万美元;<b>荣誉</b>=当年最强。只有排名前8能进。</p><p>对照六王赛:纯钱无积分——高手宁可弃表演赛不弃年终。</p>`},
+  {id:"ac-tax",t:"🧾 奖金要交税吗",b:`<p><b>按赛事举办地缴税</b>——打全球巡回赛=十几个国家报税。美国预扣约30%;英国对访英运动员相关收入征税。</p><p>大牌球员定居<b>摩纳哥/迪拜</b>(个人无所得税)的原因。中国球员:全球所得国内报税,境外已缴可抵免。</p>`}
+ ]},
+ {grp:"五档 · 趣闻FAQ",cards:[
+  {id:"ac-faq1",t:"为什么发球有两次机会?",b:`<p><b>一发拼速度</b>(求Ace),<b>二发求稳</b>(降速加旋转)。两次全失误=双误送分。二发质量是职业网球的重要分水岭。</p>`},
+  {id:"ac-faq2",t:"选边玄学",b:`<p>赛前掷硬币,赢者可选:<b>先发球/先接发/选场地</b>。多数选先发;室外赛有人先选顺风/背阴半场。</p>`},
+  {id:"ac-faq3",t:"红橙绿球(带孩子学球)",b:`<p>儿童渐进球:<b>红球</b>(8岁以下,75%减速)→<b>橙球</b>(9-10岁,50%)→<b>绿球</b>(11岁+,25%)。球更慢更弹,孩子能真正对拉。成年新手用绿球过渡也很好。</p>`},
+  {id:"ac-faq4",t:"Love是什么鬼",b:`<p>0分念Love,词源:法语 <b>l'œuf(蛋)</b>——零像蛋。"love game"=送了个蛋。</p>`}
+ ]}
+];
+const CITIES=["北京","上海","广州","深圳","成都","重庆","杭州","武汉","西安","南京","天津","苏州","郑州","长沙","沈阳","青岛","昆明","厦门","温州","金华"];
+const TITLES=[[0,"新球迷 · 刚刚开始"],[50,"看球人 · 有钱了"],[200,"常客 · 懂行了"],[500,"老球迷 · 精算师"],[1000,"球王 · 全都要"]];
+const AVATARS=["🎾","🐱","🦊","🐼","🦁","🐸","👑","🚀"];
+
+/* ================= 状态 ================= */
+const SKEY="wqprince_v2";
+function defaultState(){return {points:0,bets:[],ledger:[],venues:[],favEvents:[],city:"",prizeText:"月末积分第一名,送网球3颗!",
+  customPlayers:[],lastAnalysis:null,calOverride:null,profile:{name:"网球新人",avatar:"🎾"},matches:null,updated:null,autoRefresh:false};}
+let S=defaultState();
+try{const raw=localStorage.getItem(SKEY);if(raw){const o=JSON.parse(raw);S=Object.assign(defaultState(),o);}}catch(e){}
+if(S.calOverride&&Array.isArray(S.calOverride)&&S.calOverride.length){CALENDAR.length=0;S.calOverride.forEach(m=>CALENDAR.push(m));}
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){}}
+function matches(){return S.matches||SEED_MATCHES.matches;}
+function updatedStamp(){return S.updated||SEED_MATCHES.updated;}
+const $=id=>document.getElementById(id);
+function toast(msg){const t=$("toast");t.textContent=msg;t.style.display="block";setTimeout(()=>t.style.display="none",1800);}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function titleFor(pts){let t=TITLES[0][1];TITLES.forEach(x=>{if(pts>=x[0])t=x[1];});return t;}
+
+/* ================= 导航 ================= */
+function switchTab(id){
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));
+  document.querySelectorAll("section.tab").forEach(x=>x.classList.remove("active"));
+  $(id).classList.add("active");
+  if(id==="tab-settings")runSelfCheck();
+}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));
+$("logoBtn").addEventListener("click",()=>switchTab("tab-calendar"));
+$("hdrPts").addEventListener("click",()=>switchTab("tab-mine"));
+$("hdrName").addEventListener("click",()=>switchTab("tab-mine"));
+$("btnOpenSettings").addEventListener("click",()=>switchTab("tab-settings"));
+$("btnBackSettings").addEventListener("click",()=>switchTab("tab-mine"));
+
+/* ================= 赛历 ================= */
+function renderTours(){
+  const live=TOURS.filter(t=>t.status==="live"),soon=TOURS.filter(t=>t.status==="soon");
+  const strip=$("tourStrip");
+  strip.innerHTML=live.map((t,i)=>`<div class="tour-chip live" data-i="${i}">
+    <div class="tn"><span class="live-dot"></span>${esc(t.name)}</div>
+    <div class="ts"><span class="badge b-${t.lv}">${LV_NAMES[t.lv]}</span>${esc(t.stage)} · ${esc(t.dates)}</div>
+  </div>`).join("");
+  strip.querySelectorAll(".tour-chip").forEach(c=>c.addEventListener("click",()=>{
+    $("todayLine").scrollIntoView({behavior:"smooth"});
+  }));
+  $("nowTourCard").innerHTML=`<h3>🕐 正在进行</h3>`+
+    live.map(t=>`<div style="font-size:13.5px;margin:4px 0"><span class="live-dot"></span><b>${esc(t.name)}</b>
+    <span class="badge b-${t.lv}" style="margin-left:4px">${LV_NAMES[t.lv]}</span>
+    <span class="muted">${esc(t.stage)} · 至${esc(t.dates.split("-").pop())}${t.note?" · "+esc(t.note):""}</span></div>`).join("")+
+    (soon.length?`<div class="muted" style="margin-top:6px">接下来:${soon.map(t=>esc(t.name)+"("+esc(t.dates)+")").join("、")}</div>`:"");
+}
+let lvFilter="all";
+document.querySelectorAll("#lvFilter .chip").forEach(c=>c.addEventListener("click",()=>{
+  document.querySelectorAll("#lvFilter .chip").forEach(x=>x.classList.remove("on"));
+  c.classList.add("on");lvFilter=c.dataset.lv;renderCalendar();
+}));
+function key(mi,e){return mi+"|"+e.name;}
+function renderCalendar(){
+  const box=$("calendarList");box.innerHTML="";
+  CALENDAR.forEach((m,mi)=>{
+    const evs=m.events.filter(e=>{
+      if(lvFilter==="all")return true;
+      if(lvFilter==="fav")return S.favEvents.includes(key(mi,e));
+      return e.lv===lvFilter;
+    });
+    if(!evs.length)return;
+    const h=document.createElement("div");h.className="month-h";h.textContent=m.month;box.appendChild(h);
+    evs.forEach(e=>{
+      const id=key(mi,e),fav=S.favEvents.includes(id);
+      const d=document.createElement("div");d.className="card ev-card";d.style.boxShadow="none";d.style.margin="0 0 8px";
+      d.innerHTML=`<div class="ev-body">
+        <div class="ev-name"><span class="badge b-${e.lv}">${LV_NAMES[e.lv]||e.lv}</span>${esc(e.name)}</div>
+        <div class="ev-meta">📍${esc(e.place)} ｜ ${esc(e.surface)}<br>🕐 ${esc(e.date)}</div></div>
+        <button class="fav ${fav?"on":""}">${fav?"⭐":"☆"}</button>`;
+      d.querySelector(".fav").addEventListener("click",()=>{
+        const i=S.favEvents.indexOf(id);
+        if(i>=0)S.favEvents.splice(i,1);else S.favEvents.push(id);
+        save();renderCalendar();
+      });
+      box.appendChild(d);
+    });
+  });
+  if(!box.children.length)box.innerHTML='<p class="muted">没有符合条件的赛事。</p>';
+}
+function renderUpcoming(){
+  $("upcomingList").innerHTML=TOURS.filter(t=>t.status==="soon").map(t=>`
+    <div class="card ev-card" style="box-shadow:none;margin:0 0 8px"><div class="ev-body">
+    <div class="ev-name"><span class="badge b-${t.lv}">${LV_NAMES[t.lv]}</span>${esc(t.name)}</div>
+    <div class="ev-meta">📍${esc(t.place)} ｜ ${esc(t.surface)} ｜ 🕐 ${esc(t.dates)}</div></div></div>`).join("")
+    ||'<p class="muted">暂无。</p>';
+}
+
+/* ================= 比分板(雷速样式) ================= */
+let autoTimer=null;
+$("btnRefresh").addEventListener("click",()=>{renderScoreboard();toast("已刷新本地数据");});
+$("autoRefresh").checked=!!S.autoRefresh;
+$("autoRefresh").addEventListener("change",()=>{
+  S.autoRefresh=$("autoRefresh").checked;save();
+  if(S.autoRefresh){autoTimer=setInterval(renderScoreboard,30000);toast("30秒自动刷新:开");}
+  else{if(autoTimer)clearInterval(autoTimer);toast("自动刷新:关");}
+});
+if(S.autoRefresh)autoTimer=setInterval(renderScoreboard,30000);
+$("btnImpScore").addEventListener("click",()=>{
+  $("impScoreArea").style.display="block";$("btnDoImpScore").style.display="block";
+  $("impScoreArea").scrollIntoView({behavior:"smooth",block:"center"});
+});
+$("btnDoImpScore").addEventListener("click",()=>{
+  try{
+    const o=JSON.parse($("impScoreArea").value);
+    const arr=Array.isArray(o)?o:o.matches;
+    if(!Array.isArray(arr)||!arr.length)throw new Error("没找到matches数组");
+    S.matches=arr;S.updated=(o&&o.updated)||"刚刚导入";
+    save();$("impScoreArea").style.display="none";$("btnDoImpScore").style.display="none";
+    renderScoreboard();toast("比分快照已导入");
+  }catch(e){toast("导入失败:"+e.message);}
+});
+function cellHTML(v,dim){return `<span class="sb-cell ${dim?"dim":""}">${v||"-"}</span>`;}
+function renderScoreboard(){
+  const ms=matches();
+  const live=ms.filter(m=>m.status==="进行中"),pend=ms.filter(m=>m.status==="未开始"),done=ms.filter(m=>m.status==="已结束");
+  const maxSets=3;
+  function matchCard(m,idx){
+    const cells=[];
+    const cA=m.curGameA!==undefined?m.curGameA:(m.curGame?m.curGame.split("-")[0]:"");
+    const cB=m.curGameB!==undefined?m.curGameB:(m.curGame?m.curGame.split("-")[1]:"");
+    for(let s=0;s<maxSets;s++){
+      const v=(m.sets&&m.sets[s])||"";
+      cells.push(cellHTML(v,!v));
+    }
+    const st=statusOf(m);
+    const aw=m.winner==="a",bw=m.winner==="b";
+    const stLabel=st==="未开始"?`${m.day?"明日":"今天"}${m.start||m.time||""}开赛`:st==="进行中"?(m.cur||"进行中"):"已结束";
+    const guessBtn=st==="未开始"?`<button class="sb-fore" data-fore="${idx}" title="猜猜谁赢">🎯猜猜</button>`:'';
+    return `<div class="sb-match" data-idx="${idx}">
+      <div class="sb-time"><div class="d">${esc((m.time||"").split(" ")[0]==="次日"?"明日":"今日")}</div>${esc(m.time||"")}</div>
+      <div class="sb-status ${st==="进行中"?"st-live":st==="已结束"?"st-done":""}">${esc(stLabel)}</div>
+      <div class="sb-main">
+        <div class="sb-prow"><span class="sb-name ${aw?"winner":""}">${esc(m.a)}</span>
+          <span class="sb-cells">${st==="进行中"?`<span class="sb-cell cur">${cA||"-"}</span>`:""}${cells.join("")}</div>
+        <div class="sb-prow"><span class="sb-name ${bw?"winner":""}">${esc(m.b)}</span>
+          <span class="sb-cells">${st==="进行中"?`<span class="sb-cell cur">${cB||"-"}</span>`:""}${cells.join("")}</div>
+      </div>
+      ${guessBtn}
+    </div>`;
+  }
+  /* 按赛事分组渲染 */
+  const toursInOrder=[];const byTour={};
+  ms.forEach(m=>{if(!byTour[m.tour]){byTour[m.tour]=[];toursInOrder.push(m.tour);}byTour[m.tour].push(m);});
+  let html="";
+  toursInOrder.forEach(tn=>{
+    const list=byTour[tn];
+    const lvBadge=list[0].lv&&LV_NAMES[list[0].lv]?`<span class="badge b-${list[0].lv}">${LV_NAMES[list[0].lv]}</span>`:"";
+    html+=`<div class="sb-group">${esc(tn)} ${lvBadge}<span class="right">${esc(list[0].gender==="WTA"?"WTA":"ATP")} · BO3</span></div>`;
+    html+=`<div class="sb-table">${list.map(m=>matchCard(m,ms.indexOf(m))).join("")}</div>`;
+  });
+  $("scoreboard").innerHTML=html||'<div class="card"><p class="muted">暂无比赛数据,点右上📥导入。</p></div>';
+  $("sbUpdated").textContent=`数据时点:${esc(updatedStamp())} · 点比赛卡可手动改分`;
+  $("scoreboard").querySelectorAll(".sb-match").forEach(el=>el.addEventListener("click",e=>{
+    if(e.target.dataset.fore!==undefined)return;
+    openScoreDlg(parseInt(el.dataset.idx));
+  }));
+  $("scoreboard").querySelectorAll("[data-fore]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    openGuess(parseInt(btn.dataset.fore));
+  }));
+}
+function cleanName(s){return String(s||"").replace(/\[\d+Q?\]|\[WC\]|\[Q\]|\[LL\]|\[SE\]/g,"").replace(/\s+\[\d+\]/g,"").trim();}
+/* 改分弹窗 */
+let editingIdx=-1;
+function openScoreDlg(idx){
+  const m=matches()[idx];if(!m)return;editingIdx=idx;
+  $("scoreDlgTitle").textContent=m.tour+" · "+(m.round||"");
+  $("scoreDlgWho").textContent=m.a+"  vs  "+m.b;
+  $("sdCur").value=m.cur||"";$("sdCurGame").value=m.curGame||"";
+  $("sdSet1").value=(m.sets&&m.sets[0])||"";$("sdSet2").value=(m.sets&&m.sets[1])||"";$("sdSet3").value=(m.sets&&m.sets[2])||"";
+  $("sdWinner").value=m.winner||"";
+  $("scoreDlg").classList.add("show");
+}
+$("sdCancel").addEventListener("click",()=>$("scoreDlg").classList.remove("show"));
+$("sdSave").addEventListener("click",()=>{
+  const m=matches()[editingIdx];if(!m)return;
+  m.cur=$("sdCur").value.trim();m.curGame=$("sdCurGame").value.trim();
+  const st=[$("sdSet1").value.trim(),$("sdSet2").value.trim(),$("sdSet3").value.trim()].filter(x=>x);
+  m.sets=st;
+  m.winner=$("sdWinner").value;
+  if(m.winner){m.statusOverride="已结束";}else{delete m.statusOverride;}
+  S.matches=S.matches||SEED_MATCHES.matches.slice();
+  if(!S.matches.includes(m))S.matches=matches().slice();
+  S.updated="手动更新 "+new Date().toTimeString().slice(0,5);
+  save();$("scoreDlg").classList.remove("show");
+  renderScoreboard();renderTodayMatches();toast("已更新");
+});
+
+/* 猜猜竞猜卡 */
+let guessIdx=-1;
+function openGuess(idx){
+  const m=matches()[idx];if(!m)return;guessIdx=idx;
+  const st=statusOf(m);
+  const stText=st==="未开始"?`${m.day?"明日":"今天"}${m.start||""}开赛`:st;
+  $("ggTitle").textContent=m.tour+" · "+(m.round||"");
+  $("ggInfo").textContent=stText+(m.court?" ｜ "+m.court:"");
+  $("ggTv").innerHTML=tvLinksHTML(m);
+  $("ggVs").textContent=cleanName(m.a)+"  vs  "+cleanName(m.b);
+  $("ggA").textContent=cleanName(m.a)+"胜";
+  $("ggB").textContent=cleanName(m.b)+"胜";
+  $("guessDlg").classList.add("show");
+}
+$("ggA").addEventListener("click",()=>{
+  const m=matches()[guessIdx];if(!m)return;
+  $("guessDlg").classList.remove("show");
+  stake(cleanName(m.a),cleanName(m.b),"A",m.tour+"·"+(m.round||""));
+});
+$("ggB").addEventListener("click",()=>{
+  const m=matches()[guessIdx];if(!m)return;
+  $("guessDlg").classList.remove("show");
+  stake(cleanName(m.a),cleanName(m.b),"B",m.tour+"·"+(m.round||""));
+});
+$("ggAnalyze").addEventListener("click",()=>{
+  const m=matches()[guessIdx];if(!m)return;
+  $("guessDlg").classList.remove("show");
+  openAnalyze(cleanName(m.a),cleanName(m.b),m.tour+"·"+(m.round||""),"tab-score");
+});
+
+/* ================= 赛历·今日赛程(带预测按钮) ================= */
+function renderTodayMatches(){
+  const ms=matches();
+  $("todayLine").textContent="今日赛程("+updatedStamp()+"时点)";
+  const toursInOrder=[];const byTour={};
+  ms.forEach(m=>{if(!byTour[m.tour]){byTour[m.tour]=[];toursInOrder.push(m.tour);}byTour[m.tour].push(m);});
+  $("todayMatches").innerHTML=toursInOrder.map(tn=>{
+    const list=byTour[tn];
+    return `<div class="card" style="padding:10px 12px">
+      <div style="font-weight:700;font-size:13.5px;margin-bottom:6px">${esc(tn)} <span class="muted">${esc(list[0].round||"")}</span></div>`+
+      list.map(m=>{
+        const canGuess=statusOf(m)==="未开始";
+        return `<div style="padding:7px 0;border-top:1px dashed var(--line)">
+        <div style="font-weight:700;font-size:14px">${esc(m.time||"")}</div>
+        <div class="row" style="margin:3px 0">
+          <span style="flex:1;font-size:14.5px">${esc(m.a)} <span class="muted">vs</span> ${esc(m.b)}</span>
+          ${canGuess?`<button class="btn sec small" data-today="${ms.indexOf(m)}">🎯猜猜</button>`:'<span class="muted" style="font-size:12px">开赛了</span>'}
+        </div>
+        <div class="row" style="gap:10px">${tvLinksHTML(m)}</div>
+      </div>`;}).join("")+`</div>`;
+  }).join("");
+  $("todayMatches").querySelectorAll("[data-today]").forEach(btn=>btn.addEventListener("click",()=>{
+    openGuess(parseInt(btn.dataset.today));
+  }));
+}
+
+/* ================= 预测页(分析器) ================= */
+let bestOf=3;
+let analyzeReturnTab="tab-calendar";
+function openAnalyze(a,b,ev,from){
+  analyzeReturnTab=from||"tab-calendar";
+  $("paName").value=a||"";$("pbName").value=b||"";
+  $("paName").dispatchEvent(new Event("change"));
+  $("pbName").dispatchEvent(new Event("change"));
+  $("betEvent").value=ev||"";
+  switchTab("tab-analyze");
+}
+$("btnBackAnalyze").addEventListener("click",()=>switchTab(analyzeReturnTab));
+$("bo3").addEventListener("click",()=>{bestOf=3;$("bo3").classList.add("on");$("bo5").classList.remove("on");});
+$("bo5").addEventListener("click",()=>{bestOf=5;$("bo5").classList.add("on");$("bo3").classList.remove("on");});
+function initDatalist(){
+  $("playerList").innerHTML=allPlayers().map(p=>`<option value="${esc(p.name)}">`).join("");
+  const hot=["辛纳","阿尔卡拉斯","德约科维奇","郑钦文","萨巴伦卡","高芙","弗里茨","谢尔顿"];
+  $("hotChips").innerHTML=`<span class="muted" style="width:100%;margin-bottom:2px">热门一键填入:</span>`+
+    hot.map(n=>`<span class="chip" data-p="${esc(n)}">${esc(n)}</span>`).join("");
+  document.querySelectorAll("#hotChips .chip").forEach(c=>c.addEventListener("click",()=>{
+    const name=c.dataset.p;
+    if(!$("paName").value)fillSide("a",name);
+    else fillSide("b",name);
+  }));
+}
+function allPlayers(){return PLAYERS.concat(S.customPlayers||[]);}
+function fillSide(side,name){
+  const p=allPlayers().find(x=>x.name===name);
+  $(side==="a"?"paName":"pbName").value=name;
+  if(p){
+    $(side==="a"?"paP":"pbP").value=Math.round(p.p*1000)/10;
+    $(side==="a"?"paPv":"pbPv").textContent=(p.p*100).toFixed(1)+"%";
+    const el=$(side==="a"?"paSrc":"pbSrc");
+    el.textContent="内置库估值(2025口径,可手动调)";
+  }
+}
+function wireSide(side){
+  const inp=$(side==="a"?"paName":"pbName"), rng=$(side==="a"?"paP":"pbP"), val=$(side==="a"?"paPv":"pbPv");
+  inp.addEventListener("change",()=>{
+    const p=allPlayers().find(x=>x.name===inp.value.trim());
+    const el=$(side==="a"?"paSrc":"pbSrc");
+    if(p){fillSide(side,p.name);}
+    else{el.textContent=inp.value.trim()?"库外球员:手动设发球得分率(或用排名估算)":"";el.className="psrc custom";}
+  });
+  rng.addEventListener("input",()=>{val.textContent=(+rng.value).toFixed(1)+"%";});
+}
+wireSide("a");wireSide("b");
+function estP(gender,rank){
+  const M=[[1,10,0.72],[11,50,0.68],[51,100,0.64],[101,300,0.60]];
+  const W=M.map(r=>[r[0],r[1],r[2]-0.04]);
+  const t=(gender==="W"?W:M).find(r=>rank>=r[0]&&rank<=r[1]);
+  return t?t[2]:0.60;
+}
+$("btnEstA").addEventListener("click",()=>{
+  const r=parseInt($("estRank").value);if(!r){toast("先填排名");return;}
+  const g=(allPlayers().find(x=>x.name===$("paName").value.trim())||{}).gender||"M";
+  $("paP").value=estP(g,r)*100;$("paP").dispatchEvent(new Event("input"));
+  toast("已按"+(g==="W"?"女":"男")+"子排名"+r+"估算");
+});
+$("btnEstB").addEventListener("click",()=>{
+  const r=parseInt($("estRank").value);if(!r){toast("先填排名");return;}
+  const g=(allPlayers().find(x=>x.name===$("pbName").value.trim())||{}).gender||"M";
+  $("pbP").value=estP(g,r)*100;$("pbP").dispatchEvent(new Event("input"));
+  toast("已按"+(g==="W"?"女":"男")+"子排名"+r+"估算");
+});
+$("btnCalc").addEventListener("click",()=>{
+  const pa=$("paName").value.trim()||"球员A",pb=$("pbName").value.trim()||"球员B";
+  const pA=+$("paP").value/100,pB=+$("pbP").value/100;
+  const r=matchAnalysis(pA,pB,bestOf);
+  const gA=gameWinProb(pA),gB=gameWinProb(pB);
+  const winPct=r.win*100;
+  const verdict=winPct>=78?["A 一边倒","v-a"]:winPct>=62?["A 明显占优","v-a"]:winPct>=55?["A 略占优","v-a"]:
+                winPct>45?["五五开均势","v-even"]:winPct>38?["B 略占优","v-even"]:winPct>22?["B 明显占优","v-even"]:["B 一边倒","v-a"];
+  const distRows=Object.entries(r.dist).sort((x,y)=>{
+    const [xa,xb]=x[0].split("-").map(Number),[ya,yb]=y[0].split("-").map(Number);
+    return (ya+yb)-(xa+xb)||yb-xa;}).map(([k,v])=>{
+    const [a,b]=k.split("-");
+    return `<tr><td>${a}-${b}</td><td><b>${(v*100).toFixed(1)}%</b></td><td><span style="display:inline-block;height:9px;width:${Math.round(v*200)}px;background:var(--lime);border-radius:4px;vertical-align:middle"></span></td></tr>`;
+  }).join("");
+  $("calcResult").innerHTML=`<div class="card result">
+    <div class="bigpct"><span class="va">${esc(pa)} ${(winPct).toFixed(1)}%</span> <span class="muted">vs ${esc(pb)} ${(100-winPct).toFixed(1)}%</span></div>
+    <div class="winbar"><div class="a" style="width:${winPct}%">${(winPct).toFixed(0)}%</div><div class="b">${(100-winPct).toFixed(0)}%</div></div>
+    <div class="verdict ${verdict[1]}">${verdict[0]}</div>
+    <table class="dist-table"><tr><th>比分(${bestOf===5?"五盘三胜":"三盘两胜"})</th><th>概率</th><th></th></tr>${distRows}</table>
+    <div style="margin-top:10px">
+      <div class="stat-line"><span>${esc(pa)} 发球局胜率</span><b>${(gA*100).toFixed(1)}%</b></div>
+      <div class="stat-line"><span>${esc(pb)} 发球局胜率</span><b>${(gB*100).toFixed(1)}%</b></div>
+      <div class="stat-line"><span>${esc(pa)} 破发率</span><b>${((1-gB)*100).toFixed(1)}%</b></div>
+      <div class="stat-line"><span>${esc(pb)} 破发率</span><b>${((1-gA)*100).toFixed(1)}%</b></div>
+      <div class="stat-line"><span>平均总局数</span><b>${r.avgGames.toFixed(1)} 局</b></div>
+    </div>
+    <p class="muted" style="margin-top:8px">马尔可夫解析解。假设:盘间独立/赛季平均口径/不含伤病退赛。详见学院。</p>
+    <div class="row" style="margin-top:9px">
+      <button class="btn" id="btnStakeA">表态:押${esc(pa)}</button>
+      <button class="btn sec" id="btnStakeB">表态:押${esc(pb)}</button>
+    </div>
+  </div>`;
+  S.lastAnalysis={a:pa,b:pb};save();
+  $("btnStakeA").addEventListener("click",()=>{stake(pa,pb,"A",$("betEvent").value);});
+  $("btnStakeB").addEventListener("click",()=>{stake(pa,pb,"B",$("betEvent").value);});
+});
+function runSelfCheck(){
+  const t1=Math.abs(gameWinProb(0.6)-0.7357)<2e-4, t2=Math.abs(gameWinProb(0.7)-0.9008)<2e-4,
+        t3=Math.abs(gameWinProb(0.5)-0.5)<1e-9, t4=Math.abs(setWinProb(0.65,0.58,true)+setWinProb(0.58,0.65,false)-1)<1e-9;
+  const all=t1&&t2&&t3&&t4;
+  $("settingsCheck").innerHTML=`局锚点0.7357 ${t1?'<b class="ok">✓</b>':'✗'} ｜ 局锚点0.9008 ${t2?'<b class="ok">✓</b>':'✗'} ｜ 对称性 ${t4?'<b class="ok">✓</b>':'✗'} ｜ ${all?'<b class="ok">引擎正常</b>':'<span style="color:#c62828">异常!请勿使用计算结果</span>'}`;
+  $("selfCheck").innerHTML=all?'<b class="ok">✓ 引擎自检通过(锚点+对称性)</b>':'<span style="color:#c62828">✗ 自检异常</span>';
+}
+
+/* ================= 我的 ================= */
+function renderProfile(){
+  const p=S.profile||{name:"网球新人",avatar:"🎾"};
+  $("hdrName").textContent=p.avatar+" "+p.name;
+  $("avatarEl").textContent=p.avatar;
+  $("pnameEl").textContent=p.name;
+  $("ptitleEl").textContent=titleFor(S.points);
+  $("hdrPts").textContent="⭐ "+S.points;
+  $("minePts").textContent=S.points;
+  const done=S.bets.filter(b=>b.result);
+  const won=done.filter(b=>(b.result==="A"&&b.pick==="A")||(b.result==="B"&&b.pick==="B"));
+  $("mineTotal").textContent=S.bets.length;
+  $("mineRate").textContent=done.length?Math.round(won.length/done.length*100)+"%":"—";
+}
+const AV_CHIPS=$("pfAvatars");
+AV_CHIPS.innerHTML=AVATARS.map(a=>`<span class="chip" data-a="${a}" style="font-size:18px">${a}</span>`).join("");
+let pickedAvatar=S.profile.avatar;
+AV_CHIPS.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{
+  pickedAvatar=c.dataset.a;
+  AV_CHIPS.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");
+}));
+$("btnEditProfile").addEventListener("click",()=>{
+  $("pfName").value=S.profile.name;
+  pickedAvatar=S.profile.avatar;
+  AV_CHIPS.querySelectorAll(".chip").forEach(x=>{x.classList.toggle("on",x.dataset.a===pickedAvatar);});
+  $("profileDlg").classList.add("show");
+});
+$("pfCancel").addEventListener("click",()=>$("profileDlg").classList.remove("show"));
+$("pfSave").addEventListener("click",()=>{
+  S.profile.name=$("pfName").value.trim()||"网球新人";
+  S.profile.avatar=pickedAvatar;
+  save();$("profileDlg").classList.remove("show");renderProfile();toast("资料已更新");
+});
+function stake(a,b,pick,ev){
+  if(!a||!b||a===b){toast("对阵不合法");return;}
+  S.bets.push({id:"b"+Date.now(),ts:Date.now(),a,b,event:ev||"",pick});
+  S.ledger.push({ts:Date.now(),delta:0,text:`表态:${a} vs ${b},押 ${pick==="A"?a:b}`});
+  save();renderMine();switchTab("tab-mine");toast("已表态:押"+(pick==="A"?a:b));
+}
+$("pickA").addEventListener("click",()=>stake($("betA").value.trim(),$("betB").value.trim(),"A",$("betEvent").value.trim()));
+$("pickB").addEventListener("click",()=>stake($("betA").value.trim(),$("betB").value.trim(),"B",$("betEvent").value.trim()));
+$("btnFromAnalysis").addEventListener("click",()=>{
+  if(!S.lastAnalysis){toast("还没有预测过对阵");return;}
+  $("betA").value=S.lastAnalysis.a;$("betB").value=S.lastAnalysis.b;
+});
+function renderMine(){
+  renderProfile();
+  const pend=S.bets.filter(b=>!b.result),done=S.bets.filter(b=>b.result);
+  $("pendingCnt").textContent=pend.length?`(${pend.length})`:"";
+  $("doneCnt").textContent=done.length?`(${done.length})`:"";
+  $("pendingList").innerHTML=pend.map(b=>`<div class="bet-card pending" style="padding:9px 10px;border-radius:8px;background:#fffdf5;margin:7px 0">
+    <div><b>${esc(b.a)}</b> vs <b>${esc(b.b)}</b>${b.event?` <span class="muted">· ${esc(b.event)}</span>`:""}</div>
+    <div class="pick">我押:<b style="color:var(--green)">${esc(b.pick==="A"?b.a:b.b)}</b> 赢</div>
+    <div class="bet-actions">
+      <button class="btn small" data-win="A" data-id="${b.id}">${esc(b.a)} 赢</button>
+      <button class="btn sec small" data-win="B" data-id="${b.id}">${esc(b.b)} 赢</button>
+      <button class="btn danger small" data-del="${b.id}">删</button>
+    </div></div>`).join("")||'<p class="muted">还没有预测。从赛历/比分页点🎯,或上面手动填。</p>';
+  $("doneList").innerHTML=done.map(b=>{
+    const ok=(b.result==="A"&&b.pick==="A")||(b.result==="B"&&b.pick==="B");
+    return `<div class="bet-card" style="padding:9px 10px;border-radius:8px;background:#fff;margin:7px 0">
+    <div><b>${esc(b.a)}</b> vs <b>${esc(b.b)}</b>${b.event?` <span class="muted">· ${esc(b.event)}</span>`:""}</div>
+    <div class="pick">我押 ${esc(b.pick==="A"?b.a:b.b)} → 实际 <b>${esc(b.result==="A"?b.a:b.b)}</b> 赢
+    <span style="font-weight:700;color:${ok?"var(--green)":"var(--gray)"}"> ${ok?"✓ +10":"✗ 0"}</span></div>
+    <div class="bet-actions"><button class="btn danger small" data-del="${b.id}">删</button></div></div>`;
+  }).join("")||'<p class="muted">暂无已结算预测。</p>';
+  $("ledgerList").innerHTML=(S.ledger||[]).slice(-30).reverse().map(l=>
+    `<div class="ledger-item"><span>${esc(l.text)}</span><span class="delta ${l.delta>0?"pos":"zero"}">${l.delta>0?"+"+l.delta:l.delta||0}</span></div>`
+  ).join("")||'<p class="muted">账本为空。</p>';
+  document.querySelectorAll("[data-win]").forEach(btn=>btn.addEventListener("click",()=>{
+    const b=S.bets.find(x=>x.id===btn.dataset.id);if(!b)return;
+    b.result=btn.dataset.win;
+    const ok=(b.result==="A"&&b.pick==="A")||(b.result==="B"&&b.pick==="B");
+    if(ok){S.points+=10;S.ledger.push({ts:Date.now(),delta:10,text:`猜中:${b.a} vs ${b.b}`});}
+    else{S.ledger.push({ts:Date.now(),delta:0,text:`未中:${b.a} vs ${b.b} → ${b.result==="A"?b.a:b.b}`});}
+    save();renderMine();toast(ok?"猜中!+10分":"未中,0分");
+  }));
+  document.querySelectorAll("[data-del]").forEach(btn=>btn.addEventListener("click",()=>{
+    if(!confirm("删除这条记录?"))return;
+    S.bets=S.bets.filter(x=>x.id!==btn.dataset.del);save();renderMine();
+  }));
+}
+$("prizeText").value=S.prizeText;
+$("prizeText").addEventListener("change",()=>{S.prizeText=$("prizeText").value;save();});
+
+/* ================= 学院 ================= */
+function renderAcademy(){
+  $("academyList").innerHTML=ACADEMY.map(g=>`<div class="acad-h">${esc(g.grp)}</div>`+
+    g.cards.map(c=>`<details class="acad" id="${c.id}"><summary>${esc(c.t)}</summary><div class="body">${c.b}</div></details>`).join("")).join("");
+}
+
+/* ================= 找场 ================= */
+function renderVenues(){
+  const city=($("cityInput").value||"").trim();
+  const list=(S.venues||[]).filter(v=>!city||v.city===city);
+  $("venueList").innerHTML=list.map(v=>`<div class="card venue-card">
+    <div class="vname">${esc(v.name)} <span class="muted">${v.courts?"· "+esc(v.courts)+"片":""}${v.surf?" · "+esc(v.surf):""}</span></div>
+    <div class="venue-meta">📍${esc(v.addr||"—")}${v.price?" ｜ 💰"+esc(v.price):""}${v.city?" ｜ "+esc(v.city):""}</div>
+    <div class="v-actions">
+      ${v.phone?`<a class="a-call" href="tel:${esc(v.phone)}">📞 ${esc(v.phone)}</a>`:""}
+      <a class="a-nav" href="https://uri.amap.com/search?keyword=${encodeURIComponent((v.name||"")+" "+(v.addr||""))}&city=${encodeURIComponent(city)}" target="_blank">🧭 去导航</a>
+    </div></div>`).join("")||'<div class="card"><p class="muted">这座城市还没有场馆数据。点下方"+ 添加场馆",高德地图App搜"网球场"抄名称/地址/电话,半小时建好一座城。</p></div>';
+  $("accVenue").innerHTML='<option value="">选场馆(约球卡用)</option>'+list.map(v=>`<option>${esc(v.name)}｜${esc(v.addr||"")}</option>`).join("");
+}
+$("cityInput").value=S.city||"";
+$("cityInput").addEventListener("change",()=>{S.city=$("cityInput").value.trim();save();renderVenues();});
+$("cityList").innerHTML=CITIES.map(c=>`<option value="${c}">`).join("");
+$("btnAddVenue").addEventListener("click",()=>$("venueDlg").classList.add("show"));
+$("vCancel").addEventListener("click",()=>$("venueDlg").classList.remove("show"));
+$("vSave").addEventListener("click",()=>{
+  const name=$("vName").value.trim();
+  if(!name){toast("场馆名称必填");return;}
+  S.venues=S.venues||[];
+  S.venues.push({name,addr:$("vAddr").value.trim(),phone:$("vPhone").value.trim(),
+    courts:$("vCourts").value.trim(),surf:$("vSurf").value.trim(),price:$("vPrice").value.trim(),
+    city:$("cityInput").value.trim()});
+  save();$("venueDlg").classList.remove("show");
+  ["vName","vAddr","vPhone","vCourts","vSurf","vPrice"].forEach(id=>$(id).value="");
+  renderVenues();toast("已保存");
+});
+$("btnGenAcc").addEventListener("click",()=>{
+  const v=$("accVenue").value||"待定场地";
+  const d=$("accDate").value.trim()||"时间待定",t=$("accTime").value.trim();
+  const need=$("accNeed").value.trim()||"缺人",lv=$("accLevel").value.trim()||"水平不限";
+  const ct=$("accContact").value.trim();
+  const vn=v.split("｜")[0];
+  const venue=(S.venues||[]).find(x=>x.name===vn);
+  const phone=venue&&venue.phone?" ☎ "+venue.phone:"";
+  const txt=`🎾 约球卡
+📍 ${v}${phone}
+🕐 ${d}${t?" "+t:""}
+👥 ${need} · ${lv}${ct?"\n💬 联系:"+ct:""}
+—— 由「网球王子」生成 · 新球迷的看球工具 ——`;
+  $("accOut").value=txt;$("accOut").style.display="block";$("accBtns").style.display="flex";
+});
+$("btnCopyAcc").addEventListener("click",()=>copyText($("accOut").value));
+$("btnShareAcc").addEventListener("click",()=>{
+  if(navigator.share){navigator.share({text:$("accOut").value}).catch(()=>{});}
+  else{copyText($("accOut").value);toast("已复制,去粘贴");}
+});
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>toast("已复制"),()=>fallbackCopy(t));}
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("已复制");}catch(e){toast("复制失败,请手动全选");}document.body.removeChild(ta);}
+
+/* ================= 设置:导入导出 ================= */
+function renderPlayersTable(){
+  const ps=allPlayers();
+  $("playerCnt").textContent=`(${ps.length}人)`;
+  $("playerTable").innerHTML=ps.map(p=>`<div class="stat-line"><span>${esc(p.name)} <span class="muted">${p.gender==="W"?"女":"男"}</span></span><b>${(p.p*100).toFixed(1)}%</b></div>`).join("");
+}
+function tryImport(id){
+  try{return JSON.parse($(id).value);}catch(e){toast("JSON格式错误:"+e.message);return null;}
+}
+$("btnImpPlayers").addEventListener("click",()=>{
+  const arr=tryImport("impPlayers");if(!arr||!Array.isArray(arr))return;
+  S.customPlayers=S.customPlayers||[];let n=0;
+  arr.forEach(p=>{if(p&&p.name&&p.p>0&&p.p<1){S.customPlayers=S.customPlayers.filter(x=>x.name!==p.name);S.customPlayers.push({name:String(p.name),gender:p.gender||"M",p:+p.p});n++;}});
+  save();initDatalist();renderPlayersTable();toast(`导入${n}名球员`);
+});
+$("btnImpCalendar").addEventListener("click",()=>{
+  const arr=tryImport("impCalendar");if(!arr||!Array.isArray(arr))return;
+  if(!confirm("将整表替换内置赛历,确定?"))return;
+  S.calOverride=arr;CALENDAR.length=0;arr.forEach(m=>CALENDAR.push(m));
+  save();renderCalendar();toast("赛历已替换(已保存)");
+});
+$("btnImpVenues").addEventListener("click",()=>{
+  const arr=tryImport("impVenues");if(!arr||!Array.isArray(arr))return;
+  S.venues=S.venues||[];let n=0;
+  arr.forEach(v=>{if(v&&v.name){S.venues.push({name:String(v.name),addr:v.addr||"",phone:String(v.phone||""),courts:v.courts||"",surf:v.surf||"",price:v.price||"",city:v.city||""});n++;}});
+  save();renderVenues();toast(`导入${n}个场馆`);
+});
+$("btnImpScores").addEventListener("click",()=>{
+  const o=tryImport("impScores");if(!o)return;
+  const arr=Array.isArray(o)?o:o.matches;
+  if(!Array.isArray(arr)||!arr.length){toast("没找到matches数组");return;}
+  S.matches=arr;S.updated=(o&&o.updated)||"刚刚导入";
+  save();renderScoreboard();renderTodayMatches();toast("比分快照已导入");
+});
+$("btnExport").addEventListener("click",()=>{
+  $("exportOut").value=JSON.stringify(S);$("exportOut").style.display="block";$("btnCopyExport").style.display="inline-block";
+});
+$("btnCopyExport").addEventListener("click",()=>copyText($("exportOut").value));
+$("btnClear").addEventListener("click",()=>{
+  if(!confirm("清空所有竞猜记录、账本和积分?(球员/场馆数据保留)"))return;
+  S.points=0;S.bets=[];S.ledger=[];save();renderMine();toast("已清空");
+});
+
+/* ================= 启动 ================= */
+initDatalist();
+renderTours();renderCalendar();renderUpcoming();
+renderScoreboard();renderTodayMatches();
+renderAcademy();renderVenues();renderMine();renderPlayersTable();runSelfCheck();
+/* 在线数据模式:部署到Pages后有data.json每日自动更新;本地打开拉不到则静默用内置快照 */
+fetch('data.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(d=>{
+  if(d&&Array.isArray(d.matches)&&d.matches.length){
+    S.matches=d.matches;S.updated=d.updated;
+    renderScoreboard();renderTodayMatches();
+  }
+}).catch(()=>{});
+</script>
+</body>
+</html>
