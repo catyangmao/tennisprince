@@ -1,9 +1,10 @@
 name: daily-data
 on:
-  schedule:
-    - cron: '17 2 * * *'   # 北京 10:17
-    - cron: '17 10 * * *'  # 北京 18:17
-  workflow_dispatch: {}
+  # 【暂停中】定时抓取已停,重启时取消下面两行注释即可
+  # schedule:
+  #   - cron: '17 2 * * *'   # 北京 10:17
+  #   - cron: '17 10 * * *'  # 北京 18:17
+  workflow_dispatch: {}  # 手动触发保留:Actions页可随时手动抓一次
 permissions:
   contents: write
 jobs:
